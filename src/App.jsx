@@ -23,18 +23,29 @@ function PublicPortfolio() {
   const [skillsList, setSkillsList] = useState([]);
   const [profileInfo, setProfileInfo] = useState({});
 
+  const loadPublicData = async () => {
+    const [pData, sData, profData] = await Promise.all([
+      fetchProjects(),
+      fetchSkills(),
+      fetchProfileInfo()
+    ]);
+    setProjectsList(pData || []);
+    setSkillsList(sData || []);
+    setProfileInfo(profData || {});
+  };
+
   useEffect(() => {
-    const loadPublicData = async () => {
-      const [pData, sData, profData] = await Promise.all([
-        fetchProjects(),
-        fetchSkills(),
-        fetchProfileInfo()
-      ]);
-      setProjectsList(pData || []);
-      setSkillsList(sData || []);
-      setProfileInfo(profData || {});
-    };
     loadPublicData();
+
+    // Listen for custom event whenever data is updated in Admin or Reset
+    const handleDataUpdate = () => {
+      loadPublicData();
+    };
+
+    window.addEventListener('portfolio_data_updated', handleDataUpdate);
+    return () => {
+      window.removeEventListener('portfolio_data_updated', handleDataUpdate);
+    };
   }, []);
 
   const showToast = (msg) => {

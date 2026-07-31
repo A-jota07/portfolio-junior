@@ -15,11 +15,11 @@ export const isSupabaseConfigured = () => {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-const STORAGE_KEYS = {
-  PROJECTS: 'portfolio_projects_v2',
-  SKILLS: 'portfolio_skills_v2',
-  PROFILE: 'portfolio_profile_v2',
-  AUTH_SESSION: 'portfolio_admin_session_v2'
+export const STORAGE_KEYS = {
+  PROJECTS: 'portfolio_projects_v3',
+  SKILLS: 'portfolio_skills_v3',
+  PROFILE: 'portfolio_profile_v3',
+  AUTH_SESSION: 'portfolio_admin_session_v3'
 };
 
 const getStoredItem = (key, fallback) => {
@@ -34,17 +34,14 @@ const getStoredItem = (key, fallback) => {
 const setStoredItem = (key, data) => {
   try {
     localStorage.setItem(key, JSON.stringify(data));
+    window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
   } catch (e) {
     console.error('LocalStorage write error:', e);
   }
 };
 
 // Seed initial data in Portuguese
-if (!localStorage.getItem(STORAGE_KEYS.PROJECTS)) {
-  setStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
-}
-
-if (!localStorage.getItem(STORAGE_KEYS.SKILLS)) {
+export const seedDefaults = () => {
   const flattenedSkills = [];
   SKILL_CATEGORIES.forEach((cat) => {
     cat.skills.forEach((sk, idx) => {
@@ -58,11 +55,8 @@ if (!localStorage.getItem(STORAGE_KEYS.SKILLS)) {
       });
     });
   });
-  setStoredItem(STORAGE_KEYS.SKILLS, flattenedSkills);
-}
 
-if (!localStorage.getItem(STORAGE_KEYS.PROFILE)) {
-  setStoredItem(STORAGE_KEYS.PROFILE, {
+  const profileData = {
     name: PERSONAL_INFO.name,
     title: PERSONAL_INFO.title,
     specialization: PERSONAL_INFO.specialization,
@@ -74,8 +68,21 @@ if (!localStorage.getItem(STORAGE_KEYS.PROFILE)) {
     bioText: "Sou um Desenvolvedor Full Stack Senior apaixonado por aplicações web de alta performance, ecossistemas React modernos e software interativo orientado a IA.",
     philosophy: "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões.",
     availability: "DISPONÍVEL PARA CONTRATAÇÃO"
-  });
+  };
+
+  setStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
+  setStoredItem(STORAGE_KEYS.SKILLS, flattenedSkills);
+  setStoredItem(STORAGE_KEYS.PROFILE, profileData);
+};
+
+if (!localStorage.getItem(STORAGE_KEYS.PROJECTS)) {
+  seedDefaults();
 }
+
+export const resetToCodeDefaults = () => {
+  seedDefaults();
+  window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+};
 
 // --- PROJECTS SERVICE ---
 export const fetchProjects = async () => {
@@ -94,7 +101,10 @@ export const saveProject = async (projectData) => {
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('projects').upsert([projectData]);
-      if (!error) return { success: true, data };
+      if (!error) {
+        window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+        return { success: true, data };
+      }
     } catch (err) {
       console.warn('Erro ao salvar projeto no Supabase, fallback para local:', err);
     }
@@ -119,7 +129,10 @@ export const deleteProject = async (id) => {
   if (isSupabaseConfigured()) {
     try {
       const { error } = await supabase.from('projects').delete().eq('id', id);
-      if (!error) return { success: true };
+      if (!error) {
+        window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+        return { success: true };
+      }
     } catch (err) {
       console.warn('Erro ao deletar no Supabase, fallback local:', err);
     }
@@ -148,7 +161,10 @@ export const saveSkill = async (skillData) => {
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('skills').upsert([skillData]);
-      if (!error) return { success: true, data };
+      if (!error) {
+        window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+        return { success: true, data };
+      }
     } catch (err) {
       console.warn('Erro ao salvar habilidade no Supabase, fallback local:', err);
     }
@@ -173,7 +189,10 @@ export const deleteSkill = async (id) => {
   if (isSupabaseConfigured()) {
     try {
       const { error } = await supabase.from('skills').delete().eq('id', id);
-      if (!error) return { success: true };
+      if (!error) {
+        window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+        return { success: true };
+      }
     } catch (err) {
       console.warn('Erro ao deletar habilidade no Supabase, fallback local:', err);
     }
@@ -202,7 +221,10 @@ export const saveProfileInfo = async (profileData) => {
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('profile_info').upsert([profileData]);
-      if (!error) return { success: true, data };
+      if (!error) {
+        window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+        return { success: true, data };
+      }
     } catch (err) {
       console.warn('Erro ao salvar perfil no Supabase, fallback local:', err);
     }

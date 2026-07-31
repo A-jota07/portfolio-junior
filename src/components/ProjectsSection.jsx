@@ -132,7 +132,7 @@ export default function ProjectsSection({ projectsList = [], filterQuery = '', o
 
                   <div className="flex items-center gap-2">
                     <a
-                      href={project.repoUrl || 'https://github.com'}
+                      href={project.repoUrl || 'https://github.com/A-jota07'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-[#9d4edd]/20 transition-all"

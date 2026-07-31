@@ -74,9 +74,9 @@ export default function AboutMeSection({ skillsList = [], profileInfo = {}, filt
           <div className="text-xs sm:text-sm font-mono leading-relaxed text-slate-300 space-y-3">
             <p className="text-emerald-400/90 italic">
               /*<br />
-              &nbsp;* @name {profileInfo.name || "Michael Weaver"}<br />
-              &nbsp;* @role {profileInfo.title || "Senior Full Stack Dev"}<br />
-              &nbsp;* @location {profileInfo.location || "San Francisco, CA"}<br />
+              &nbsp;* @name {profileInfo.name || "Alexandre Junior"}<br />
+              &nbsp;* @role {profileInfo.title || "Junior Full Stack Dev"}<br />
+              &nbsp;* @location {profileInfo.location || "Rondonópolis, MT"}<br />
               &nbsp;*/
             </p>
 

@@ -10,7 +10,8 @@ import {
   fetchProfileInfo,
   saveProfileInfo,
   logoutAdmin,
-  isSupabaseConfigured
+  isSupabaseConfigured,
+  resetToCodeDefaults
 } from '../lib/supabaseClient';
 import {
   Plus,
@@ -24,7 +25,8 @@ import {
   Database,
   Sliders,
   FolderPlus,
-  UserCheck
+  UserCheck,
+  RefreshCw
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -64,7 +66,21 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadData();
+
+    const handleUpdate = () => {
+      loadData();
+    };
+    window.addEventListener('portfolio_data_updated', handleUpdate);
+    return () => window.removeEventListener('portfolio_data_updated', handleUpdate);
   }, []);
+
+  const handleResetDefaults = () => {
+    if (window.confirm('Deseja restaurar os dados originais do código e atualizar o cache local?')) {
+      resetToCodeDefaults();
+      showToast('Dados restaurados e sincronizados com o código!');
+      loadData();
+    }
+  };
 
   const handleLogout = async () => {
     await logoutAdmin();
@@ -188,6 +204,15 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={handleResetDefaults}
+              className="flex items-center gap-1 px-3 py-1.5 rounded text-xs font-mono bg-[#18103c] border border-[#9d4edd]/40 text-[#c77dff] hover:text-white hover:border-[#c77dff] transition-all cursor-pointer"
+              title="Restaurar dados originais do código"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Resincronizar Código</span>
+            </button>
+
             <Link
               to="/"
               className="flex items-center gap-1 px-3 py-1.5 rounded text-xs font-mono bg-[#110d2a] border border-[#9d4edd]/30 text-slate-300 hover:text-white hover:border-[#c77dff] transition-all"
