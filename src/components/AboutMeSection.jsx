@@ -1,36 +1,29 @@
 import React, { useState } from 'react';
-import { SKILL_CATEGORIES, PERSONAL_INFO } from '../data/portfolioData';
-import { Code2, Layout, Server, Cpu, Sparkles, CheckCircle, Terminal, Layers, Star } from 'lucide-react';
+import { Code2, Layout, Server, Cpu, Sparkles, Terminal, Layers, Star } from 'lucide-react';
 
-export default function AboutMeSection({ filterQuery }) {
+export default function AboutMeSection({ skillsList = [], profileInfo = {}, filterQuery = '' }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  // Filter skills based on search query & selected category
-  const filteredCategories = SKILL_CATEGORIES.map(cat => {
-    const matchingSkills = cat.skills.filter(skill => {
-      const matchesSearch = filterQuery === '' || 
+  // Categorize skills list
+  const categoryNames = ['Languages & Core', 'Frontend & UI', 'Backend & Cloud'];
+  
+  const skillCategories = categoryNames.map(catName => {
+    const matchingSkills = skillsList.filter(skill => {
+      const isCatMatch = skill.category === catName;
+      const isSearchMatch = filterQuery === '' || 
         skill.name.toLowerCase().includes(filterQuery.toLowerCase()) ||
-        skill.tag.toLowerCase().includes(filterQuery.toLowerCase());
-      
-      const matchesCat = selectedCategory === 'All' || cat.name === selectedCategory;
+        (skill.tag && skill.tag.toLowerCase().includes(filterQuery.toLowerCase()));
 
-      return matchesSearch && matchesCat;
+      const isCategoryFilterMatch = selectedCategory === 'All' || selectedCategory === catName;
+
+      return isCatMatch && isSearchMatch && isCategoryFilterMatch;
     });
 
     return {
-      ...cat,
+      name: catName,
       skills: matchingSkills
     };
   }).filter(cat => cat.skills.length > 0);
-
-  const getCategoryIcon = (iconName) => {
-    switch (iconName) {
-      case 'Code2': return <Code2 className="w-4 h-4 text-[#c77dff]" />;
-      case 'Layout': return <Layout className="w-4 h-4 text-[#f72585]" />;
-      case 'Server': return <Server className="w-4 h-4 text-[#9d4edd]" />;
-      default: return <Cpu className="w-4 h-4 text-[#c77dff]" />;
-    }
-  };
 
   return (
     <section id="about-me" className="py-8 border-t border-[#9d4edd]/20 space-y-8">
@@ -65,38 +58,34 @@ export default function AboutMeSection({ filterQuery }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: JSDoc Style Bio Block */}
+        {/* Left Column: Code Comment Bio Specification Block */}
         <div className="lg:col-span-5 p-5 rounded-xl bg-[#0e0a22]/90 border border-[#9d4edd]/30 shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-[#9d4edd]/20 pb-3">
             <div className="flex items-center gap-2 text-xs font-mono text-[#c77dff] font-bold">
               <Terminal className="w-4 h-4 text-[#f72585]" />
-              <span>/** Bio_Specification.md **/</span>
+              <span>/* Bio_Specification.md */</span>
             </div>
             <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-              AVAILABLE FOR HIRE
+              {profileInfo.availability || 'AVAILABLE FOR HIRE'}
             </span>
           </div>
 
-          {/* Formatted Docstring Text */}
+          {/* Formatted Code Comment Text */}
           <div className="text-xs sm:text-sm font-mono leading-relaxed text-slate-300 space-y-3">
             <p className="text-emerald-400/90 italic">
-              /**<br />
-              &nbsp;* @name {PERSONAL_INFO.name}<br />
-              &nbsp;* @role {PERSONAL_INFO.title}<br />
-              &nbsp;* @location {PERSONAL_INFO.location}<br />
+              /*<br />
+              &nbsp;* @name {profileInfo.name || "Michael Weaver"}<br />
+              &nbsp;* @role {profileInfo.title || "Senior Full Stack Dev"}<br />
+              &nbsp;* @location {profileInfo.location || "San Francisco, CA"}<br />
               &nbsp;*/
             </p>
 
             <p>
-              I am a passionate <span className="text-[#c77dff] font-semibold">Senior Full Stack Developer</span> specializing in high-performance web applications, modern React ecosystems, and AI-driven interactive software.
-            </p>
-
-            <p>
-              With over <span className="text-[#f72585] font-semibold">7+ years of engineering experience</span>, I bridge the gap between complex system architecture and pixel-perfect developer UI aesthetic.
+              {profileInfo.bioText || "I am a passionate Senior Full Stack Developer specializing in high-performance web applications, modern React ecosystems, and AI-driven interactive software."}
             </p>
 
             <p className="pt-2 text-slate-400 text-xs border-t border-[#9d4edd]/15">
-              <span className="text-[#9d4edd] font-bold">// Philosophy:</span> "Write robust, self-documenting code. Build interfaces that inspire curiosity and deliver uncompromising speed."
+              <span className="text-[#9d4edd] font-bold">// Philosophy:</span> "{profileInfo.philosophy || "Write robust, self-documenting code. Build interfaces that inspire curiosity and deliver speed."}"
             </p>
           </div>
 
@@ -108,30 +97,26 @@ export default function AboutMeSection({ filterQuery }) {
             </span>
             <span className="px-2.5 py-1 rounded text-xs font-mono bg-[#160d38] text-[#c77dff] border border-[#9d4edd]/30 flex items-center gap-1">
               <Layers className="w-3 h-3 text-[#f72585]" />
-              RAG & AI Agents
-            </span>
-            <span className="px-2.5 py-1 rounded text-xs font-mono bg-[#160d38] text-[#c77dff] border border-[#9d4edd]/30 flex items-center gap-1">
-              <Star className="w-3 h-3 text-emerald-400" />
-              Web Tooling & DX
+              Supabase CRUD Mesh
             </span>
           </div>
         </div>
 
         {/* Right Column: Tech Stack Grid */}
         <div className="lg:col-span-7 space-y-4">
-          {filteredCategories.length === 0 ? (
+          {skillCategories.length === 0 ? (
             <div className="p-8 rounded-xl bg-[#0e0a22]/60 border border-[#9d4edd]/20 text-center text-slate-400 font-mono text-xs">
-              // No skills match query: "{filterQuery}". Try clear search.
+              // No skills match query: "{filterQuery}".
             </div>
           ) : (
-            filteredCategories.map((category) => (
+            skillCategories.map((category) => (
               <div
                 key={category.name}
                 className="p-4 rounded-xl bg-[#0c091d]/80 border border-[#9d4edd]/25 shadow-lg hover:border-[#9d4edd]/50 transition-all"
               >
                 {/* Category Header */}
                 <div className="flex items-center gap-2 pb-2.5 mb-3 border-b border-[#9d4edd]/15">
-                  {getCategoryIcon(category.icon)}
+                  <Code2 className="w-4 h-4 text-[#c77dff]" />
                   <h3 className="text-xs sm:text-sm font-mono font-bold text-white tracking-wide">
                     // {category.name}
                   </h3>
@@ -141,7 +126,7 @@ export default function AboutMeSection({ filterQuery }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {category.skills.map((skill) => (
                     <div
-                      key={skill.name}
+                      key={skill.id || skill.name}
                       className="p-2.5 rounded-lg bg-[#060412] border border-[#9d4edd]/20 hover:border-[#c77dff]/60 transition-all space-y-1.5 group"
                     >
                       <div className="flex items-center justify-between text-xs font-mono">
@@ -149,21 +134,21 @@ export default function AboutMeSection({ filterQuery }) {
                           {skill.name}
                         </span>
                         <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#9d4edd]/20 text-[#c77dff]">
-                          {skill.experience}
+                          {skill.experience || '4 yrs'}
                         </span>
                       </div>
 
-                      {/* Level Progress Bar */}
+                      {/* Animated Purple/Magenta Progress Bar */}
                       <div className="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden flex">
                         <div
                           style={{ width: `${skill.level}%` }}
-                          className="h-full bg-gradient-to-r from-[#9d4edd] via-[#c77dff] to-[#f72585] rounded-full group-hover:shadow-[0_0_10px_#c77dff] transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-purple-600 via-pink-500 to-fuchsia-500 rounded-full group-hover:shadow-[0_0_10px_#c77dff] transition-all duration-500"
                         ></div>
                       </div>
 
                       <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-0.5">
-                        <span>tag: {skill.tag}</span>
-                        <span className="text-[#c77dff]">{skill.level}%</span>
+                        <span>tag: {skill.tag || 'Expert'}</span>
+                        <span className="text-[#c77dff] font-bold">{skill.level}%</span>
                       </div>
                     </div>
                   ))}

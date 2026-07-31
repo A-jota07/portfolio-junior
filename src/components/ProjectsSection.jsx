@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { FEATURED_PROJECTS } from '../data/portfolioData';
-import { Play, ExternalLink, Star, GitFork, Maximize2, Layers, CheckCircle } from 'lucide-react';
+import { Play, ExternalLink, Star, GitFork, Maximize2, Layers } from 'lucide-react';
 import { GithubIcon } from './Icons';
 
-export default function ProjectsSection({ filterQuery, onSelectProjectModal }) {
+export default function ProjectsSection({ projectsList = [], filterQuery = '', onSelectProjectModal }) {
   const [selectedTag, setSelectedTag] = useState('All');
 
   // Filter projects by search query and category tag
-  const filteredProjects = FEATURED_PROJECTS.filter((proj) => {
+  const filteredProjects = projectsList.filter((proj) => {
+    const stackStr = Array.isArray(proj.stack) ? proj.stack.join(' ') : (proj.stack || '');
     const matchesSearch = filterQuery === '' ||
       proj.title.toLowerCase().includes(filterQuery.toLowerCase()) ||
       proj.description.toLowerCase().includes(filterQuery.toLowerCase()) ||
-      proj.stack.some(s => s.toLowerCase().includes(filterQuery.toLowerCase()));
+      stackStr.toLowerCase().includes(filterQuery.toLowerCase());
 
     const matchesTag = selectedTag === 'All' || proj.category === selectedTag;
 
@@ -65,7 +65,7 @@ export default function ProjectsSection({ filterQuery, onSelectProjectModal }) {
               {/* Top Image Preview Header */}
               <div className="relative h-44 overflow-hidden bg-slate-900">
                 <img
-                  src={project.previewImage}
+                  src={project.previewImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop'}
                   alt={project.title}
                   className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-80 transition-all duration-500"
                 />
@@ -77,7 +77,7 @@ export default function ProjectsSection({ filterQuery, onSelectProjectModal }) {
                     {project.category}
                   </span>
                   <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#070510]/80 text-[#c77dff] border border-[#9d4edd]/40">
-                    {project.tag}
+                    {project.tag || 'FEATURED'}
                   </span>
                 </div>
 
@@ -107,12 +107,12 @@ export default function ProjectsSection({ filterQuery, onSelectProjectModal }) {
 
                 {/* Stack Badges */}
                 <div className="flex flex-wrap gap-1.5 pt-1">
-                  {project.stack.map((tech) => (
+                  {(Array.isArray(project.stack) ? project.stack : (project.stack ? project.stack.split(',') : [])).map((tech) => (
                     <span
                       key={tech}
                       className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#18103c] text-[#c77dff] border border-[#9d4edd]/30"
                     >
-                      {tech}
+                      {tech.trim()}
                     </span>
                   ))}
                 </div>
@@ -122,17 +122,17 @@ export default function ProjectsSection({ filterQuery, onSelectProjectModal }) {
                   <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
                     <span className="flex items-center gap-1 text-yellow-400">
                       <Star className="w-3.5 h-3.5 fill-yellow-400" />
-                      {project.stars}
+                      {project.stars || 100}
                     </span>
                     <span className="flex items-center gap-1 text-[#c77dff]">
                       <GitFork className="w-3.5 h-3.5" />
-                      {project.forks}
+                      {project.forks || 25}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <a
-                      href={project.repoUrl}
+                      href={project.repoUrl || 'https://github.com'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-[#9d4edd]/20 transition-all"

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Code, Terminal, Sparkles, Command, Check, Copy } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Search, Code, Terminal, Sparkles, Command, Check, Copy, Lock } from 'lucide-react';
 
 export default function Navbar({ activeSection, setActiveSection, filterQuery, setFilterQuery, onHireClick }) {
   const [copied, setCopied] = useState(false);
@@ -40,13 +41,20 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
           </div>
         </div>
 
-        {/* System Status Indicators */}
+        {/* System Status & Admin Link */}
         <div className="flex items-center gap-4 text-[11px] font-mono">
+          <Link
+            to="/admin"
+            className="flex items-center gap-1 text-[#f72585] hover:text-white transition-colors"
+            title="Admin CRUD Dashboard"
+          >
+            <Lock className="w-3 h-3" />
+            <span>[// admin]</span>
+          </Link>
+
           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#9d4edd]/10 border border-[#9d4edd]/20 text-[#c77dff]">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span>main*</span>
-            <span className="text-slate-500">|</span>
-            <span className="text-slate-400">UTF-8</span>
           </div>
 
           <button 

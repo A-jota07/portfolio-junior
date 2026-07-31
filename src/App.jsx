@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import ShowcaseWidget from './components/ShowcaseWidget';
@@ -6,15 +7,36 @@ import AboutMeSection from './components/AboutMeSection';
 import ProjectsSection from './components/ProjectsSection';
 import InteractiveTerminal from './components/InteractiveTerminal';
 import ProjectModal from './components/ProjectModal';
-import { PERSONAL_INFO } from './data/portfolioData';
+import RequireAuth from './components/RequireAuth';
+import LoginPage from './pages/LoginPage';
+import AdminDashboard from './pages/AdminDashboard';
+import { fetchProjects, fetchSkills, fetchProfileInfo } from './lib/supabaseClient';
 import { Terminal, Sparkles, Heart, Mail, CheckCircle2 } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from './components/Icons';
 
-export default function App() {
+function PublicPortfolio() {
   const [activeSection, setActiveSection] = useState('home');
   const [filterQuery, setFilterQuery] = useState('');
   const [selectedModalProject, setSelectedModalProject] = useState(null);
   const [toastMessage, setToastMessage] = useState(null);
+
+  const [projectsList, setProjectsList] = useState([]);
+  const [skillsList, setSkillsList] = useState([]);
+  const [profileInfo, setProfileInfo] = useState({});
+
+  useEffect(() => {
+    const loadPublicData = async () => {
+      const [pData, sData, profData] = await Promise.all([
+        fetchProjects(),
+        fetchSkills(),
+        fetchProfileInfo()
+      ]);
+      setProjectsList(pData || []);
+      setSkillsList(sData || []);
+      setProfileInfo(profData || {});
+    };
+    loadPublicData();
+  }, []);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -86,10 +108,15 @@ export default function App() {
         {/* PERIPHERAL SECTIONS (Surrounding sections linked directly below central frame) */}
         <div className="space-y-12 px-2 sm:px-4">
           {/* Section 02: About Me & Tech Stack */}
-          <AboutMeSection filterQuery={filterQuery} />
+          <AboutMeSection
+            skillsList={skillsList}
+            profileInfo={profileInfo}
+            filterQuery={filterQuery}
+          />
 
           {/* Section 03: Featured Projects Gallery */}
           <ProjectsSection
+            projectsList={projectsList}
             filterQuery={filterQuery}
             onSelectProjectModal={(proj) => setSelectedModalProject(proj)}
           />
@@ -99,7 +126,7 @@ export default function App() {
         <footer className="mt-16 pt-8 pb-12 border-t border-[#9d4edd]/20 text-center space-y-4 text-xs font-mono text-slate-400">
           <div className="flex items-center justify-center gap-4">
             <a
-              href={`https://${PERSONAL_INFO.contact.github}`}
+              href={`https://${profileInfo.github || 'github.com/mweaver-dev'}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-[#c77dff] transition-colors"
@@ -109,7 +136,7 @@ export default function App() {
             </a>
             <span className="text-slate-700">•</span>
             <a
-              href={`https://${PERSONAL_INFO.contact.linkedin}`}
+              href={`https://${profileInfo.linkedin || 'linkedin.com/in/mweaver-dev'}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-[#c77dff] transition-colors"
@@ -119,7 +146,7 @@ export default function App() {
             </a>
             <span className="text-slate-700">•</span>
             <a
-              href={`mailto:${PERSONAL_INFO.contact.email}`}
+              href={`mailto:${profileInfo.email || 'michael.weaver@dev.tech'}`}
               className="flex items-center gap-1 hover:text-[#c77dff] transition-colors"
             >
               <Mail className="w-3.5 h-3.5" />
@@ -130,7 +157,7 @@ export default function App() {
           <p className="flex items-center justify-center gap-1">
             <span>Designed & Built with</span>
             <Heart className="w-3.5 h-3.5 text-[#f72585] fill-[#f72585]" />
-            <span>using React 19 & Midnight Purple Aesthetic</span>
+            <span>using React 19 & Supabase</span>
           </p>
 
           <p className="text-[11px] text-slate-600">
@@ -155,5 +182,24 @@ export default function App() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PublicPortfolio />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/admin"
+          element={
+            <RequireAuth>
+              <AdminDashboard />
+            </RequireAuth>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
