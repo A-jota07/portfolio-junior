@@ -1,35 +1,32 @@
 export const PERSONAL_INFO = {
-  name: "MICHAEL WEAVER",
-  title: "Engenheiro Full Stack Senior & IA",
-  specialization: "Dev Full Stack | IA & Tecnologia",
+  name: "ALEXANDRE JUNIOR",
+  title: "Engenheiro Full Stack Junior",
+  specialization: "Dev Full Stack",
   location: "São Paulo, SP (Disponível Remoto)",
-  status: "Disponível para Projetos de Alto Impacto & Consultoria",
+  status: "Disponível para Projetos",
   contact: {
-    email: "michael.weaver@dev.tech",
-    github: "github.com/mweaver-dev",
-    linkedin: "linkedin.com/in/mweaver-dev",
-    twitter: "@mweaver_code"
+    email: "alexandrecassiodesouzajunior@gmail.com",
+    github: "https://github.com/A-jota07",
+    linkedin: "https://www.linkedin.com/in/alexandre-c-souza-jr/",
+    twitter: "https://x.com/A_Junior15"
   },
   stats: {
-    experienceYears: "7+ Anos",
-    reposContributed: "140+",
-    totalCommits: "3.842",
-    codeQualityScore: "99.4%"
+    experienceYears: "3+ Anos",
+    reposContributed: "15+",
   }
 };
 
 export const CODE_SNIPPETS = {
   contactInfo: `const informacoesContato = {
-  nome: "Michael Weaver",
-  email: "michael.weaver@dev.tech",
-  github: "github.com/mweaver-dev",
-  linkedin: "linkedin.com/in/mweaver-dev",
+  nome: "Alexandre Junior",
+  email: "alexandrecassiodesouzajunior@gmail.com",
+  github: "https://github.com/A-jota07",
+  linkedin: "https://www.linkedin.com/in/alexandre-c-souza-jr/",
   status: "Disponível para contratos e cargos em tempo integral"
 };`,
 
   developerConfig: `export const perfilDev = {
-  stack: ["React 19", "TypeScript", "Node.js", "Python", "PyTorch", "Tailwind CSS"],
-  arquitetura: ["Microsserviços", "Serverless", "Agentes de IA & RAG", "GraphQL"],
+  stack: ["React 19", "TypeScript", "Node.js", "Python", "Tailwind CSS"],
   mentalidade: "Performance em primeiro lugar, design impecável, código robusto",
   disponivelParaContratacao: true
 };`

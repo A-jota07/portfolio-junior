@@ -16,10 +16,10 @@ export const isSupabaseConfigured = () => {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const STORAGE_KEYS = {
-  PROJECTS: 'portfolio_projects_v3',
-  SKILLS: 'portfolio_skills_v3',
-  PROFILE: 'portfolio_profile_v3',
-  AUTH_SESSION: 'portfolio_admin_session_v3'
+  PROJECTS: 'portfolio_projects_v4',
+  SKILLS: 'portfolio_skills_v4',
+  PROFILE: 'portfolio_profile_v4',
+  AUTH_SESSION: 'portfolio_admin_session_v4'
 };
 
 const getStoredItem = (key, fallback) => {
@@ -40,8 +40,12 @@ const setStoredItem = (key, data) => {
   }
 };
 
-// Seed initial data in Portuguese
-export const seedDefaults = () => {
+// Isolated initial seeds (does NOT overwrite existing user data)
+if (!localStorage.getItem(STORAGE_KEYS.PROJECTS)) {
+  setStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
+}
+
+if (!localStorage.getItem(STORAGE_KEYS.SKILLS)) {
   const flattenedSkills = [];
   SKILL_CATEGORIES.forEach((cat) => {
     cat.skills.forEach((sk, idx) => {
@@ -55,8 +59,11 @@ export const seedDefaults = () => {
       });
     });
   });
+  setStoredItem(STORAGE_KEYS.SKILLS, flattenedSkills);
+}
 
-  const profileData = {
+if (!localStorage.getItem(STORAGE_KEYS.PROFILE)) {
+  setStoredItem(STORAGE_KEYS.PROFILE, {
     name: PERSONAL_INFO.name,
     title: PERSONAL_INFO.title,
     specialization: PERSONAL_INFO.specialization,
@@ -68,19 +75,46 @@ export const seedDefaults = () => {
     bioText: "Sou um Desenvolvedor Full Stack Senior apaixonado por aplicações web de alta performance, ecossistemas React modernos e software interativo orientado a IA.",
     philosophy: "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões.",
     availability: "DISPONÍVEL PARA CONTRATAÇÃO"
-  };
-
-  setStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
-  setStoredItem(STORAGE_KEYS.SKILLS, flattenedSkills);
-  setStoredItem(STORAGE_KEYS.PROFILE, profileData);
-};
-
-if (!localStorage.getItem(STORAGE_KEYS.PROJECTS)) {
-  seedDefaults();
+  });
 }
 
+// Reset data back to initial defaults if explicitly triggered by user
 export const resetToCodeDefaults = () => {
-  seedDefaults();
+  localStorage.removeItem(STORAGE_KEYS.PROJECTS);
+  localStorage.removeItem(STORAGE_KEYS.SKILLS);
+  localStorage.removeItem(STORAGE_KEYS.PROFILE);
+
+  setStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
+  
+  const flattenedSkills = [];
+  SKILL_CATEGORIES.forEach((cat) => {
+    cat.skills.forEach((sk, idx) => {
+      flattenedSkills.push({
+        id: `sk-${cat.name.toLowerCase().replace(/\s+/g, '-')}-${idx}`,
+        category: cat.name,
+        name: sk.name,
+        level: sk.level,
+        experience: sk.experience,
+        tag: sk.tag
+      });
+    });
+  });
+  setStoredItem(STORAGE_KEYS.SKILLS, flattenedSkills);
+
+  setStoredItem(STORAGE_KEYS.PROFILE, {
+    name: PERSONAL_INFO.name,
+    title: PERSONAL_INFO.title,
+    specialization: PERSONAL_INFO.specialization,
+    location: PERSONAL_INFO.location,
+    status: PERSONAL_INFO.status,
+    email: PERSONAL_INFO.contact.email,
+    github: PERSONAL_INFO.contact.github,
+    linkedin: PERSONAL_INFO.contact.linkedin,
+    bioText: "Sou um Desenvolvedor Full Stack Senior apaixonado por aplicações web de alta performance, ecossistemas React modernos e software interativo orientado a IA.",
+    philosophy: "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões.",
+    availability: "DISPONÍVEL PARA CONTRATAÇÃO"
+  });
+
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
 };
 
@@ -88,7 +122,7 @@ export const resetToCodeDefaults = () => {
 export const fetchProjects = async () => {
   if (isSupabaseConfigured()) {
     try {
-      const { data, error } = await supabase.from('projects').select('*').order('id');
+      const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
       if (!error && data && data.length > 0) return data;
     } catch (err) {
       console.warn('Erro ao buscar projetos no Supabase, usando armazenamento local:', err);
@@ -218,9 +252,11 @@ export const fetchProfileInfo = async () => {
 };
 
 export const saveProfileInfo = async (profileData) => {
+  const profileToSave = { ...profileData, id: 'main-profile' };
+  
   if (isSupabaseConfigured()) {
     try {
-      const { data, error } = await supabase.from('profile_info').upsert([profileData]);
+      const { data, error } = await supabase.from('profile_info').upsert([profileToSave]);
       if (!error) {
         window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
         return { success: true, data };
@@ -230,8 +266,8 @@ export const saveProfileInfo = async (profileData) => {
     }
   }
 
-  setStoredItem(STORAGE_KEYS.PROFILE, profileData);
-  return { success: true, data: profileData };
+  setStoredItem(STORAGE_KEYS.PROFILE, profileToSave);
+  return { success: true, data: profileToSave };
 };
 
 // --- AUTHENTICATION SERVICE ---
