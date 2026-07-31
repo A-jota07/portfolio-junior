@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import ShowcaseWidget from './components/ShowcaseWidget';
@@ -11,7 +11,7 @@ import RequireAuth from './components/RequireAuth';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
 import { fetchProjects, fetchSkills, fetchProfileInfo } from './lib/supabaseClient';
-import { Terminal, Sparkles, Heart, Mail, CheckCircle2 } from 'lucide-react';
+import { Heart, Mail, CheckCircle2 } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from './components/Icons';
 
 function PublicPortfolio() {
@@ -44,7 +44,7 @@ function PublicPortfolio() {
   };
 
   const handleHireClick = () => {
-    showToast('🚀 Hire inquiry protocol initiated! Email: michael.weaver@dev.tech');
+    showToast('🚀 Protocolo de contratação iniciado! E-mail: michael.weaver@dev.tech');
   };
 
   const scrollToSection = (id) => {
@@ -150,18 +150,18 @@ function PublicPortfolio() {
               className="flex items-center gap-1 hover:text-[#c77dff] transition-colors"
             >
               <Mail className="w-3.5 h-3.5" />
-              <span>// email</span>
+              <span>// e-mail</span>
             </a>
           </div>
 
           <p className="flex items-center justify-center gap-1">
-            <span>Designed & Built with</span>
+            <span>Projetado & Desenvolvido com</span>
             <Heart className="w-3.5 h-3.5 text-[#f72585] fill-[#f72585]" />
-            <span>using React 19 & Supabase</span>
+            <span>usando React 19 & Supabase</span>
           </p>
 
           <p className="text-[11px] text-slate-600">
-            © {new Date().getFullYear()} Michael Weaver. All rights reserved.
+            © {new Date().getFullYear()} Michael Weaver. Todos os direitos reservados.
           </p>
         </footer>
       </div>

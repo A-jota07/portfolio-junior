@@ -4,7 +4,6 @@ import { PERSONAL_INFO, FEATURED_PROJECTS, SKILL_CATEGORIES } from '../data/port
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://sample-portfolio-id.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sample-anon-key';
 
-// Check if credentials are production valid
 export const isSupabaseConfigured = () => {
   return (
     import.meta.env.VITE_SUPABASE_URL &&
@@ -16,14 +15,11 @@ export const isSupabaseConfigured = () => {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// ==========================================
-// MOCK STORAGE HELPERS (FOR ZERO-CONFIG / OFFLINE MODE)
-// ==========================================
 const STORAGE_KEYS = {
-  PROJECTS: 'portfolio_projects_v1',
-  SKILLS: 'portfolio_skills_v1',
-  PROFILE: 'portfolio_profile_v1',
-  AUTH_SESSION: 'portfolio_admin_session_v1'
+  PROJECTS: 'portfolio_projects_v2',
+  SKILLS: 'portfolio_skills_v2',
+  PROFILE: 'portfolio_profile_v2',
+  AUTH_SESSION: 'portfolio_admin_session_v2'
 };
 
 const getStoredItem = (key, fallback) => {
@@ -43,13 +39,12 @@ const setStoredItem = (key, data) => {
   }
 };
 
-// Initial Seed Data Initialization
+// Seed initial data in Portuguese
 if (!localStorage.getItem(STORAGE_KEYS.PROJECTS)) {
   setStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
 }
 
 if (!localStorage.getItem(STORAGE_KEYS.SKILLS)) {
-  // Flatten skills data structure with IDs for database table representation
   const flattenedSkills = [];
   SKILL_CATEGORIES.forEach((cat) => {
     cat.skills.forEach((sk, idx) => {
@@ -76,15 +71,11 @@ if (!localStorage.getItem(STORAGE_KEYS.PROFILE)) {
     email: PERSONAL_INFO.contact.email,
     github: PERSONAL_INFO.contact.github,
     linkedin: PERSONAL_INFO.contact.linkedin,
-    bioText: "I am a passionate Senior Full Stack Developer specializing in high-performance web applications, modern React ecosystems, and AI-driven interactive software.",
-    philosophy: "Write robust, self-documenting code. Build interfaces that inspire curiosity and deliver uncompromising speed.",
-    availability: "AVAILABLE FOR HIRE"
+    bioText: "Sou um Desenvolvedor Full Stack Senior apaixonado por aplicações web de alta performance, ecossistemas React modernos e software interativo orientado a IA.",
+    philosophy: "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões.",
+    availability: "DISPONÍVEL PARA CONTRATAÇÃO"
   });
 }
-
-// ==========================================
-// UNIFIED DATA SERVICE (SUPABASE + FALLBACK)
-// ==========================================
 
 // --- PROJECTS SERVICE ---
 export const fetchProjects = async () => {
@@ -93,7 +84,7 @@ export const fetchProjects = async () => {
       const { data, error } = await supabase.from('projects').select('*').order('id');
       if (!error && data && data.length > 0) return data;
     } catch (err) {
-      console.warn('Supabase fetch projects error, using storage fallback:', err);
+      console.warn('Erro ao buscar projetos no Supabase, usando armazenamento local:', err);
     }
   }
   return getStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
@@ -105,11 +96,10 @@ export const saveProject = async (projectData) => {
       const { data, error } = await supabase.from('projects').upsert([projectData]);
       if (!error) return { success: true, data };
     } catch (err) {
-      console.warn('Supabase save project error, falling back to local:', err);
+      console.warn('Erro ao salvar projeto no Supabase, fallback para local:', err);
     }
   }
 
-  // Local storage fallback
   const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
   const existsIdx = currentProjects.findIndex(p => p.id === projectData.id);
   
@@ -131,7 +121,7 @@ export const deleteProject = async (id) => {
       const { error } = await supabase.from('projects').delete().eq('id', id);
       if (!error) return { success: true };
     } catch (err) {
-      console.warn('Supabase delete error, falling back to local:', err);
+      console.warn('Erro ao deletar no Supabase, fallback local:', err);
     }
   }
 
@@ -148,7 +138,7 @@ export const fetchSkills = async () => {
       const { data, error } = await supabase.from('skills').select('*');
       if (!error && data && data.length > 0) return data;
     } catch (err) {
-      console.warn('Supabase fetch skills error, using storage fallback:', err);
+      console.warn('Erro ao buscar habilidades no Supabase, usando local:', err);
     }
   }
   return getStoredItem(STORAGE_KEYS.SKILLS, []);
@@ -160,7 +150,7 @@ export const saveSkill = async (skillData) => {
       const { data, error } = await supabase.from('skills').upsert([skillData]);
       if (!error) return { success: true, data };
     } catch (err) {
-      console.warn('Supabase save skill error, using local fallback:', err);
+      console.warn('Erro ao salvar habilidade no Supabase, fallback local:', err);
     }
   }
 
@@ -185,7 +175,7 @@ export const deleteSkill = async (id) => {
       const { error } = await supabase.from('skills').delete().eq('id', id);
       if (!error) return { success: true };
     } catch (err) {
-      console.warn('Supabase delete skill error, using local fallback:', err);
+      console.warn('Erro ao deletar habilidade no Supabase, fallback local:', err);
     }
   }
 
@@ -202,7 +192,7 @@ export const fetchProfileInfo = async () => {
       const { data, error } = await supabase.from('profile_info').select('*').single();
       if (!error && data) return data;
     } catch (err) {
-      console.warn('Supabase fetch profile error, using storage fallback:', err);
+      console.warn('Erro ao buscar perfil no Supabase, usando local:', err);
     }
   }
   return getStoredItem(STORAGE_KEYS.PROFILE, {});
@@ -214,7 +204,7 @@ export const saveProfileInfo = async (profileData) => {
       const { data, error } = await supabase.from('profile_info').upsert([profileData]);
       if (!error) return { success: true, data };
     } catch (err) {
-      console.warn('Supabase save profile error, using local fallback:', err);
+      console.warn('Erro ao salvar perfil no Supabase, fallback local:', err);
     }
   }
 
@@ -233,11 +223,10 @@ export const loginAdmin = async (email, password) => {
       }
       if (error) return { success: false, error: error.message };
     } catch (err) {
-      console.warn('Supabase auth failed, trying demo fallback auth:', err);
+      console.warn('Falha na autenticação Supabase, tentando demo local:', err);
     }
   }
 
-  // Demo Fallback Auth (for testing & instant preview)
   if (email === 'admin@dev.tech' && password === 'admin123') {
     const demoSession = {
       user: { id: 'admin-01', email: 'admin@dev.tech', role: 'admin' },
@@ -247,7 +236,7 @@ export const loginAdmin = async (email, password) => {
     return { success: true, user: demoSession.user, session: demoSession };
   }
 
-  return { success: false, error: 'Invalid credentials. Demo login: admin@dev.tech / admin123' };
+  return { success: false, error: 'Credenciais inválidas. Login de demo: admin@dev.tech / admin123' };
 };
 
 export const logoutAdmin = async () => {
@@ -255,7 +244,7 @@ export const logoutAdmin = async () => {
     try {
       await supabase.auth.signOut();
     } catch (e) {
-      console.warn('Supabase signout error:', e);
+      console.warn('Erro de logout Supabase:', e);
     }
   }
   localStorage.removeItem(STORAGE_KEYS.AUTH_SESSION);

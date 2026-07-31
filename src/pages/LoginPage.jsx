@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { loginAdmin } from '../lib/supabaseClient';
-import { Terminal, Lock, Mail, ArrowRight, ShieldCheck, Key, Sparkles, AlertTriangle, CornerDownLeft } from 'lucide-react';
+import { Lock, Mail, ShieldCheck, Key, Sparkles, AlertTriangle } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -24,7 +24,7 @@ export default function LoginPage() {
     if (res.success) {
       navigate(from, { replace: true });
     } else {
-      setErrorMsg(res.error || 'Authentication failed');
+      setErrorMsg(res.error || 'Falha na autenticação');
     }
   };
 
@@ -57,7 +57,7 @@ export default function LoginPage() {
             to="/"
             className="text-xs font-mono text-slate-400 hover:text-[#c77dff] transition-colors"
           >
-            ← Public Site
+            ← Voltar ao Site
           </Link>
         </div>
 
@@ -68,10 +68,10 @@ export default function LoginPage() {
               <Lock className="w-6 h-6" />
             </div>
             <h1 className="text-xl font-extrabold font-mono text-white tracking-wide">
-              &gt;&gt; Admin Authentication
+              &gt;&gt; Autenticação de Administrador
             </h1>
             <p className="text-xs text-[#c77dff] font-mono">
-              // Enter credentials to access Supabase CRUD Dashboard
+              // Insira suas credenciais para acessar o Dashboard CRUD
             </p>
           </div>
 
@@ -86,7 +86,7 @@ export default function LoginPage() {
             {/* Email Input */}
             <div className="space-y-1">
               <label className="text-xs font-mono text-slate-400 flex items-center gap-1">
-                <span>// email_address</span>
+                <span>// endereco_email</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
@@ -106,7 +106,7 @@ export default function LoginPage() {
             {/* Password Input */}
             <div className="space-y-1">
               <label className="text-xs font-mono text-slate-400 flex items-center gap-1">
-                <span>// master_password</span>
+                <span>// senha_mestra</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
@@ -130,11 +130,11 @@ export default function LoginPage() {
               className="w-full py-3 rounded-lg font-mono text-xs font-bold bg-gradient-to-r from-[#9d4edd] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-lg shadow-[#9d4edd]/30 transition-all transform active:scale-95 cursor-pointer flex items-center justify-center gap-2"
             >
               {loading ? (
-                <span>// AUTHENTICATING...</span>
+                <span>// AUTENTICANDO...</span>
               ) : (
                 <>
                   <ShieldCheck className="w-4 h-4" />
-                  <span>// ACCESS_ADMIN_DASHBOARD</span>
+                  <span>// ACESSAR_DASHBOARD_ADMIN</span>
                 </>
               )}
             </button>
@@ -147,10 +147,10 @@ export default function LoginPage() {
               className="text-[11px] font-mono text-[#c77dff] hover:text-white flex items-center justify-center gap-1.5 mx-auto hover:underline cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-              <span>// Auto-fill Demo Admin Credentials</span>
+              <span>// Auto-preencher Credenciais de Demonstração</span>
             </button>
             <p className="text-[10px] text-slate-500 font-mono mt-1">
-              Demo Login: <code className="text-slate-300">admin@dev.tech</code> / <code className="text-slate-300">admin123</code>
+              Login Demo: <code className="text-slate-300">admin@dev.tech</code> / <code className="text-slate-300">admin123</code>
             </p>
           </div>
         </div>

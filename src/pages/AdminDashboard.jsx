@@ -13,34 +13,28 @@ import {
   isSupabaseConfigured
 } from '../lib/supabaseClient';
 import {
-  Terminal,
   Plus,
   Edit2,
   Trash2,
   Save,
   LogOut,
   ExternalLink,
-  Layers,
-  Code2,
-  UserCheck,
   CheckCircle2,
   X,
   Database,
-  Sparkles,
   Sliders,
-  FolderPlus
+  FolderPlus,
+  UserCheck
 } from 'lucide-react';
-import { GithubIcon } from '../components/Icons';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('projects'); // 'projects' | 'skills' | 'profile'
+  const [activeTab, setActiveTab] = useState('projects');
   const [projects, setProjects] = useState([]);
   const [skills, setSkills] = useState([]);
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [toastMessage, setToastMessage] = useState(null);
 
-  // Modals state
   const [projectModalOpen, setProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
 
@@ -90,8 +84,8 @@ export default function AdminDashboard() {
         title: '',
         subtitle: '',
         description: '',
-        category: 'AI & Tools',
-        tag: 'FEATURED',
+        category: 'IA & Ferramentas',
+        tag: 'DESTAQUE',
         stackInput: 'React 19, TypeScript, Tailwind CSS',
         stars: 100,
         forks: 20,
@@ -117,14 +111,14 @@ export default function AdminDashboard() {
 
     await saveProject(projectToSave);
     setProjectModalOpen(false);
-    showToast(`Project "${projectToSave.title}" saved successfully!`);
+    showToast(`Projeto "${projectToSave.title}" salvo com sucesso!`);
     loadData();
   };
 
   const handleDeleteProjectItem = async (id, title) => {
-    if (window.confirm(`Are you sure you want to delete project "${title}"?`)) {
+    if (window.confirm(`Tem certeza de que deseja excluir o projeto "${title}"?`)) {
       await deleteProject(id);
-      showToast(`Project deleted.`);
+      showToast(`Projeto excluído.`);
       loadData();
     }
   };
@@ -139,8 +133,8 @@ export default function AdminDashboard() {
         category: 'Frontend & UI',
         name: '',
         level: 90,
-        experience: '4 yrs',
-        tag: 'Expert'
+        experience: '4 anos',
+        tag: 'Especialista'
       });
     }
     setSkillModalOpen(true);
@@ -150,14 +144,14 @@ export default function AdminDashboard() {
     e.preventDefault();
     await saveSkill(editingSkill);
     setSkillModalOpen(false);
-    showToast(`Skill "${editingSkill.name}" saved!`);
+    showToast(`Habilidade "${editingSkill.name}" salva!`);
     loadData();
   };
 
   const handleDeleteSkillItem = async (id, name) => {
-    if (window.confirm(`Delete skill "${name}"?`)) {
+    if (window.confirm(`Excluir habilidade "${name}"?`)) {
       await deleteSkill(id);
-      showToast(`Skill removed.`);
+      showToast(`Habilidade removida.`);
       loadData();
     }
   };
@@ -166,7 +160,7 @@ export default function AdminDashboard() {
   const handleSaveProfileForm = async (e) => {
     e.preventDefault();
     await saveProfileInfo(profile);
-    showToast('Profile & Bio specification updated!');
+    showToast('Especificação do perfil atualizada!');
   };
 
   return (
@@ -180,16 +174,16 @@ export default function AdminDashboard() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-sm font-bold text-white tracking-wide font-mono">// Supabase Admin CRUD Dashboard</h1>
+                <h1 className="text-sm font-bold text-white tracking-wide font-mono">// Dashboard Admin CRUD Supabase</h1>
                 <span className={`px-2 py-0.5 rounded text-[10px] font-mono border ${
                   isSupabaseConfigured()
                     ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                     : 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40'
                 }`}>
-                  {isSupabaseConfigured() ? '● SUPABASE CONNECTED' : '● LOCAL STORAGE MODE'}
+                  {isSupabaseConfigured() ? '● SUPABASE CONECTADO' : '● MODO ARMAZENAMENTO LOCAL'}
                 </span>
               </div>
-              <p className="text-xs text-[#c77dff]">Authenticated User: admin@dev.tech</p>
+              <p className="text-xs text-[#c77dff]">Usuário Autenticado: admin@dev.tech</p>
             </div>
           </div>
 
@@ -199,7 +193,7 @@ export default function AdminDashboard() {
               className="flex items-center gap-1 px-3 py-1.5 rounded text-xs font-mono bg-[#110d2a] border border-[#9d4edd]/30 text-slate-300 hover:text-white hover:border-[#c77dff] transition-all"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-              <span>Public Site</span>
+              <span>Ver Site Público</span>
             </Link>
 
             <button
@@ -207,7 +201,7 @@ export default function AdminDashboard() {
               className="flex items-center gap-1 px-3 py-1.5 rounded text-xs font-mono bg-red-950/60 border border-red-500/40 text-red-300 hover:bg-red-900/80 transition-all cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>Logout</span>
+              <span>Sair</span>
             </button>
           </div>
         </div>
@@ -227,7 +221,7 @@ export default function AdminDashboard() {
             }`}
           >
             <FolderPlus className="w-4 h-4" />
-            <span>// Projects Manager ({projects.length})</span>
+            <span>// Gerenciador de Projetos ({projects.length})</span>
           </button>
 
           <button
@@ -239,7 +233,7 @@ export default function AdminDashboard() {
             }`}
           >
             <Sliders className="w-4 h-4" />
-            <span>// Skills Manager ({skills.length})</span>
+            <span>// Gerenciador de Habilidades ({skills.length})</span>
           </button>
 
           <button
@@ -251,13 +245,13 @@ export default function AdminDashboard() {
             }`}
           >
             <UserCheck className="w-4 h-4" />
-            <span>// Profile & Bio Editor</span>
+            <span>// Editor de Perfil & Bio</span>
           </button>
         </div>
 
         {loading ? (
           <div className="p-12 text-center text-xs font-mono text-slate-400">
-            // Fetching database records from Supabase...
+            // Buscando registros no banco de dados...
           </div>
         ) : (
           <>
@@ -265,13 +259,13 @@ export default function AdminDashboard() {
             {activeTab === 'projects' && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-white font-mono">// Active Portfolio Projects</h2>
+                  <h2 className="text-sm font-bold text-white font-mono">// Projetos Ativos no Portfólio</h2>
                   <button
                     onClick={() => handleOpenProjectModal()}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold bg-gradient-to-r from-[#9d4edd] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-md shadow-[#9d4edd]/20 cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>[+ New Project]</span>
+                    <span>[+ Novo Projeto]</span>
                   </button>
                 </div>
 
@@ -280,11 +274,11 @@ export default function AdminDashboard() {
                     <table className="w-full text-left text-xs font-mono">
                       <thead className="bg-[#080514] border-b border-[#9d4edd]/20 text-[#c77dff]">
                         <tr>
-                          <th className="p-3">Project Title</th>
-                          <th className="p-3">Category</th>
-                          <th className="p-3">Badge Tag</th>
-                          <th className="p-3">Tech Stack</th>
-                          <th className="p-3 text-right">Actions</th>
+                          <th className="p-3">Título do Projeto</th>
+                          <th className="p-3">Categoria</th>
+                          <th className="p-3">Etiqueta Badge</th>
+                          <th className="p-3">Stack Tecnológica</th>
+                          <th className="p-3 text-right">Ações</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#9d4edd]/15 text-slate-300">
@@ -307,14 +301,14 @@ export default function AdminDashboard() {
                               <button
                                 onClick={() => handleOpenProjectModal(proj)}
                                 className="p-1 rounded bg-[#9d4edd]/20 text-[#c77dff] hover:bg-[#9d4edd] hover:text-white transition-all cursor-pointer"
-                                title="Edit"
+                                title="Editar"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeleteProjectItem(proj.id, proj.title)}
                                 className="p-1 rounded bg-red-950 text-red-400 hover:bg-red-600 hover:text-white transition-all cursor-pointer"
-                                title="Delete"
+                                title="Excluir"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -332,13 +326,13 @@ export default function AdminDashboard() {
             {activeTab === 'skills' && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-white font-mono">// Technical Skills Inventory</h2>
+                  <h2 className="text-sm font-bold text-white font-mono">// Inventário de Habilidades Técnicas</h2>
                   <button
                     onClick={() => handleOpenSkillModal()}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold bg-gradient-to-r from-[#9d4edd] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-md shadow-[#9d4edd]/20 cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>[+ Add Skill]</span>
+                    <span>[+ Adicionar Habilidade]</span>
                   </button>
                 </div>
 
@@ -356,13 +350,12 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="text-[11px] text-slate-400 font-mono">
-                        Category: <span className="text-slate-200">{sk.category}</span>
+                        Categoria: <span className="text-slate-200">{sk.category}</span>
                       </div>
 
-                      {/* Level Bar */}
                       <div className="space-y-1">
                         <div className="flex justify-between text-[10px] text-slate-400 font-mono">
-                          <span>Experience: {sk.experience}</span>
+                          <span>Experiência: {sk.experience}</span>
                           <span className="text-[#c77dff] font-bold">{sk.level}%</span>
                         </div>
                         <div className="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden">
@@ -378,13 +371,13 @@ export default function AdminDashboard() {
                           onClick={() => handleOpenSkillModal(sk)}
                           className="px-2.5 py-1 rounded text-[11px] font-mono bg-[#9d4edd]/20 text-[#c77dff] hover:bg-[#9d4edd] hover:text-white transition-all cursor-pointer flex items-center gap-1"
                         >
-                          <Edit2 className="w-3 h-3" /> Edit
+                          <Edit2 className="w-3 h-3" /> Editar
                         </button>
                         <button
                           onClick={() => handleDeleteSkillItem(sk.id, sk.name)}
                           className="px-2.5 py-1 rounded text-[11px] font-mono bg-red-950 text-red-400 hover:bg-red-600 hover:text-white transition-all cursor-pointer flex items-center gap-1"
                         >
-                          <Trash2 className="w-3 h-3" /> Delete
+                          <Trash2 className="w-3 h-3" /> Excluir
                         </button>
                       </div>
                     </div>
@@ -397,19 +390,19 @@ export default function AdminDashboard() {
             {activeTab === 'profile' && (
               <form onSubmit={handleSaveProfileForm} className="p-6 rounded-xl bg-[#0c091d] border border-[#9d4edd]/30 space-y-6 max-w-3xl">
                 <div className="flex items-center justify-between border-b border-[#9d4edd]/20 pb-3">
-                  <h2 className="text-sm font-bold text-white font-mono">// Edit Profile Specification</h2>
+                  <h2 className="text-sm font-bold text-white font-mono">// Editar Especificação do Perfil</h2>
                   <button
                     type="submit"
                     className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-mono font-bold bg-gradient-to-r from-[#9d4edd] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-md cursor-pointer"
                   >
                     <Save className="w-4 h-4" />
-                    <span>SAVE CHANGES</span>
+                    <span>SALVAR ALTERAÇÕES</span>
                   </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
                   <div className="space-y-1">
-                    <label className="text-slate-400">// Full Name</label>
+                    <label className="text-slate-400">// Nome Completo</label>
                     <input
                       type="text"
                       value={profile.name || ''}
@@ -419,7 +412,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-slate-400">// Professional Title</label>
+                    <label className="text-slate-400">// Título Profissional</label>
                     <input
                       type="text"
                       value={profile.title || ''}
@@ -429,7 +422,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-slate-400">// Specialization Subtitle</label>
+                    <label className="text-slate-400">// Subtítulo de Especialização</label>
                     <input
                       type="text"
                       value={profile.specialization || ''}
@@ -439,10 +432,10 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-slate-400">// Availability Status Badge</label>
+                    <label className="text-slate-400">// Badge de Status de Disponibilidade</label>
                     <input
                       type="text"
-                      value={profile.availability || 'AVAILABLE FOR HIRE'}
+                      value={profile.availability || 'DISPONÍVEL PARA CONTRATAÇÃO'}
                       onChange={(e) => setProfile({ ...profile, availability: e.target.value })}
                       className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-emerald-400 font-bold focus:outline-none focus:border-[#c77dff]"
                     />
@@ -450,7 +443,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-1 text-xs font-mono">
-                  <label className="text-slate-400">// Biography Text (Docstring style)</label>
+                  <label className="text-slate-400">// Texto de Biografia (estilo docstring)</label>
                   <textarea
                     rows={4}
                     value={profile.bioText || ''}
@@ -460,7 +453,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="space-y-1 text-xs font-mono">
-                  <label className="text-slate-400">// Core Philosophy Statement</label>
+                  <label className="text-slate-400">// Declaração de Filosofia</label>
                   <input
                     type="text"
                     value={profile.philosophy || ''}
@@ -479,7 +472,7 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070510]/80 backdrop-blur-md">
           <form onSubmit={handleSaveProjectForm} className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-xl bg-[#0c091d] border border-[#9d4edd]/50 p-6 space-y-4 font-mono text-xs shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#9d4edd]/20 pb-3">
-              <h3 className="text-sm font-bold text-white">// Project Editor Specification</h3>
+              <h3 className="text-sm font-bold text-white">// Especificação do Editor de Projetos</h3>
               <button type="button" onClick={() => setProjectModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
@@ -487,7 +480,7 @@ export default function AdminDashboard() {
 
             <div className="space-y-3">
               <div>
-                <label className="text-slate-400">Project Title</label>
+                <label className="text-slate-400">Título do Projeto</label>
                 <input
                   type="text"
                   required
@@ -498,7 +491,7 @@ export default function AdminDashboard() {
               </div>
 
               <div>
-                <label className="text-slate-400">Subtitle</label>
+                <label className="text-slate-400">Subtítulo</label>
                 <input
                   type="text"
                   value={editingProject.subtitle}
@@ -509,20 +502,20 @@ export default function AdminDashboard() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-400">Category</label>
+                  <label className="text-slate-400">Categoria</label>
                   <select
                     value={editingProject.category}
                     onChange={(e) => setEditingProject({ ...editingProject, category: e.target.value })}
                     className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
                   >
-                    <option>AI & Tools</option>
-                    <option>Infrastructure</option>
-                    <option>Security</option>
+                    <option>IA & Ferramentas</option>
+                    <option>Infraestrutura</option>
+                    <option>Segurança</option>
                     <option>UI/UX</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-slate-400">Badge Tag</label>
+                  <label className="text-slate-400">Etiqueta Badge</label>
                   <input
                     type="text"
                     value={editingProject.tag}
@@ -533,7 +526,7 @@ export default function AdminDashboard() {
               </div>
 
               <div>
-                <label className="text-slate-400">Description</label>
+                <label className="text-slate-400">Descrição</label>
                 <textarea
                   rows={3}
                   required
@@ -544,7 +537,7 @@ export default function AdminDashboard() {
               </div>
 
               <div>
-                <label className="text-slate-400">Tech Stack (comma separated)</label>
+                <label className="text-slate-400">Stack Tecnológica (separada por vírgulas)</label>
                 <input
                   type="text"
                   value={editingProject.stackInput}
@@ -555,7 +548,7 @@ export default function AdminDashboard() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-400">Live Demo URL</label>
+                  <label className="text-slate-400">URL Demo ao Vivo</label>
                   <input
                     type="text"
                     value={editingProject.liveUrl}
@@ -564,7 +557,7 @@ export default function AdminDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="text-slate-400">GitHub Repo URL</label>
+                  <label className="text-slate-400">URL Repositório GitHub</label>
                   <input
                     type="text"
                     value={editingProject.repoUrl}
@@ -581,13 +574,13 @@ export default function AdminDashboard() {
                 onClick={() => setProjectModalOpen(false)}
                 className="px-4 py-2 rounded bg-slate-800 text-slate-300"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 rounded font-bold bg-[#9d4edd] text-white hover:bg-[#c77dff]"
               >
-                Save Project
+                Salvar Projeto
               </button>
             </div>
           </form>
@@ -599,7 +592,7 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070510]/80 backdrop-blur-md">
           <form onSubmit={handleSaveSkillForm} className="relative w-full max-w-md rounded-xl bg-[#0c091d] border border-[#9d4edd]/50 p-6 space-y-4 font-mono text-xs shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#9d4edd]/20 pb-3">
-              <h3 className="text-sm font-bold text-white">// Skill Editor Specification</h3>
+              <h3 className="text-sm font-bold text-white">// Especificação do Editor de Habilidades</h3>
               <button type="button" onClick={() => setSkillModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
@@ -607,7 +600,7 @@ export default function AdminDashboard() {
 
             <div className="space-y-3">
               <div>
-                <label className="text-slate-400">Skill Name</label>
+                <label className="text-slate-400">Nome da Habilidade</label>
                 <input
                   type="text"
                   required
@@ -618,13 +611,13 @@ export default function AdminDashboard() {
               </div>
 
               <div>
-                <label className="text-slate-400">Category</label>
+                <label className="text-slate-400">Categoria</label>
                 <select
                   value={editingSkill.category}
                   onChange={(e) => setEditingSkill({ ...editingSkill, category: e.target.value })}
                   className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
                 >
-                  <option>Languages & Core</option>
+                  <option>Linguagens & Core</option>
                   <option>Frontend & UI</option>
                   <option>Backend & Cloud</option>
                 </select>
@@ -632,7 +625,7 @@ export default function AdminDashboard() {
 
               <div>
                 <div className="flex justify-between">
-                  <label className="text-slate-400">Proficiency Level (%)</label>
+                  <label className="text-slate-400">Nível de Proficiência (%)</label>
                   <span className="text-[#c77dff] font-bold">{editingSkill.level}%</span>
                 </div>
                 <input
@@ -647,7 +640,7 @@ export default function AdminDashboard() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-slate-400">Experience (e.g., 5 yrs)</label>
+                  <label className="text-slate-400">Experiência (ex: 5 anos)</label>
                   <input
                     type="text"
                     value={editingSkill.experience}
@@ -656,7 +649,7 @@ export default function AdminDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="text-slate-400">Tag (e.g., Expert, Master)</label>
+                  <label className="text-slate-400">Tag (ex: Especialista, Mestre)</label>
                   <input
                     type="text"
                     value={editingSkill.tag}
@@ -673,13 +666,13 @@ export default function AdminDashboard() {
                 onClick={() => setSkillModalOpen(false)}
                 className="px-4 py-2 rounded bg-slate-800 text-slate-300"
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 rounded font-bold bg-[#9d4edd] text-white hover:bg-[#c77dff]"
               >
-                Save Skill
+                Salvar Habilidade
               </button>
             </div>
           </form>

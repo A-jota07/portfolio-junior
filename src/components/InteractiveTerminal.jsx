@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal, CornerDownLeft, Trash2, Maximize2, Minimize2, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Terminal, CornerDownLeft, Trash2, Maximize2, Minimize2 } from 'lucide-react';
 import { PERSONAL_INFO, FEATURED_PROJECTS } from '../data/portfolioData';
 
 export default function InteractiveTerminal({ onExecuteCommand }) {
@@ -7,8 +7,8 @@ export default function InteractiveTerminal({ onExecuteCommand }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState('terminal');
   const [history, setHistory] = useState([
-    { type: 'system', content: 'Antigravity CLI Shell v2.4.0 (x86_64-pc-linux-gnu)' },
-    { type: 'system', content: 'Type "help" or "projects" to explore CLI commands.' }
+    { type: 'system', content: 'Shell CLI Antigravity v2.4.0 (x86_64-pc-linux-gnu)' },
+    { type: 'system', content: 'Digite "ajuda", "skills" ou "projetos" para explorar os comandos.' }
   ]);
 
   const bottomRef = useRef(null);
@@ -25,17 +25,18 @@ export default function InteractiveTerminal({ onExecuteCommand }) {
     const newHistory = [...history, { type: 'user', content: `michael@weaver-dev:~$ ${inputVal}` }];
 
     switch (cmd) {
+      case 'ajuda':
       case 'help':
         newHistory.push({
           type: 'output',
-          content: `Available commands:
-  help       - Show this list of available commands
-  bio        - Display developer profile & snapshot
-  skills     - List technical stack competencies
-  projects   - Show list of featured projects
-  contact    - Output contact details & links
-  sudo hire  - Trigger priority recruiter response
-  clear      - Clear terminal history`
+          content: `Comandos disponíveis:
+  ajuda / help      - Exibir esta lista de comandos disponíveis
+  bio               - Exibir perfil do desenvolvedor e resumo
+  habilidades       - Listar competências da stack tecnológica
+  projetos          - Mostrar lista de projetos em destaque
+  contato           - Exibir informações de contato e links
+  sudo contratar    - Iniciar protocolo de contratação prioritária
+  limpar / clear    - Limpar histórico do terminal`
         });
         break;
 
@@ -43,18 +44,20 @@ export default function InteractiveTerminal({ onExecuteCommand }) {
         newHistory.push({
           type: 'output',
           content: `${PERSONAL_INFO.name} | ${PERSONAL_INFO.title}
-Location: ${PERSONAL_INFO.location}
+Localização: ${PERSONAL_INFO.location}
 Exp: ${PERSONAL_INFO.stats.experienceYears} | Repos: ${PERSONAL_INFO.stats.reposContributed}`
         });
         break;
 
+      case 'habilidades':
       case 'skills':
         newHistory.push({
           type: 'output',
-          content: `Core Stack: TypeScript, React 19, Node.js, Python, Tailwind v4, Rust, WebAssembly, GraphQL, Docker.`
+          content: `Stack Principal: TypeScript, React 19, Node.js, Python, Tailwind v4, Rust, WebAssembly, GraphQL, Docker.`
         });
         break;
 
+      case 'projetos':
       case 'projects':
         newHistory.push({
           type: 'output',
@@ -62,24 +65,28 @@ Exp: ${PERSONAL_INFO.stats.experienceYears} | Repos: ${PERSONAL_INFO.stats.repos
         });
         break;
 
+      case 'contato':
       case 'contact':
         newHistory.push({
           type: 'output',
-          content: `Email: ${PERSONAL_INFO.contact.email}
+          content: `E-mail: ${PERSONAL_INFO.contact.email}
 GitHub: ${PERSONAL_INFO.contact.github}
 LinkedIn: ${PERSONAL_INFO.contact.linkedin}`
         });
         break;
 
+      case 'sudo contratar':
       case 'sudo hire':
+      case 'contratar':
       case 'hire':
         newHistory.push({
           type: 'output',
-          content: `🚀 Access Granted! Launching priority hire application protocol for Michael Weaver...`
+          content: `🚀 Acesso Concedido! Iniciando protocolo de contratação prioritária para Michael Weaver...`
         });
         if (onExecuteCommand) onExecuteCommand('hire');
         break;
 
+      case 'limpar':
       case 'clear':
         setHistory([]);
         setInputVal('');
@@ -88,7 +95,7 @@ LinkedIn: ${PERSONAL_INFO.contact.linkedin}`
       default:
         newHistory.push({
           type: 'error',
-          content: `bash: command not found: "${cmd}". Type "help" for valid commands.`
+          content: `bash: comando não encontrado: "${cmd}". Digite "ajuda" para ver comandos válidos.`
         });
         break;
     }
@@ -124,14 +131,14 @@ LinkedIn: ${PERSONAL_INFO.contact.linkedin}`
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <span>OUTPUT</span>
+            <span>SAÍDA</span>
           </button>
 
           <button
             onClick={() => setActiveTab('problems')}
             className="px-2.5 py-0.5 rounded text-xs font-mono text-slate-500 hidden md:flex items-center gap-1"
           >
-            <span>PROBLEMS</span>
+            <span>PROBLEMAS</span>
             <span className="px-1 bg-emerald-500/20 text-emerald-300 rounded text-[9px]">0</span>
           </button>
         </div>
@@ -141,14 +148,14 @@ LinkedIn: ${PERSONAL_INFO.contact.linkedin}`
           <button
             onClick={() => setHistory([])}
             className="p-1 hover:text-white transition-colors cursor-pointer"
-            title="Clear Console"
+            title="Limpar Console"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="p-1 hover:text-[#c77dff] transition-colors cursor-pointer"
-            title={isExpanded ? 'Collapse' : 'Expand'}
+            title={isExpanded ? 'Recolher' : 'Expandir'}
           >
             {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </button>
@@ -187,7 +194,7 @@ LinkedIn: ${PERSONAL_INFO.contact.linkedin}`
           type="text"
           value={inputVal}
           onChange={(e) => setInputVal(e.target.value)}
-          placeholder="type 'help', 'bio', 'skills', 'projects'..."
+          placeholder="digite 'ajuda', 'bio', 'skills', 'projetos'..."
           className="flex-1 bg-transparent font-mono text-xs text-white placeholder-slate-600 focus:outline-none"
         />
         <button

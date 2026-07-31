@@ -7,28 +7,22 @@ import {
 } from '../data/portfolioData';
 import { 
   Play, 
-  ExternalLink, 
   Star, 
   GitFork, 
   Activity, 
-  Layers, 
-  Code, 
   Filter, 
   Maximize2, 
   CheckCircle2,
-  TrendingUp,
-  Cpu
+  TrendingUp
 } from 'lucide-react';
-import { GithubIcon } from './Icons';
 
 export default function ShowcaseWidget({ onSelectProjectModal }) {
   const [viewMode, setViewMode] = useState('project'); // 'project' | 'activity'
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
-  const [activityFilter, setActivityFilter] = useState('all'); // 'all' | 'commits' | 'issues'
+  const [activityFilter, setActivityFilter] = useState('all');
 
   const currentProject = FEATURED_PROJECTS[selectedProjectIndex];
 
-  // SVG Chart Dimensions & Path calculation
   const maxCommitVal = Math.max(...COMMIT_ACTIVITY_DATA.map(d => d.commits));
   const chartHeight = 120;
   const chartWidth = 320;
@@ -48,7 +42,7 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-[#f72585] shadow-[0_0_10px_#f72585]"></span>
           <h2 className="text-xs sm:text-sm font-mono font-bold text-white tracking-wide">
-            {viewMode === 'project' ? '// Live Project Showcase' : '// Repo Activity Metrics'}
+            {viewMode === 'project' ? '// Vitrine de Projetos ao Vivo' : '// Métricas de Atividade de Repos'}
           </h2>
         </div>
 
@@ -62,7 +56,7 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            // showcase
+            // vitrine
           </button>
           <button
             onClick={() => setViewMode('activity')}
@@ -72,7 +66,7 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            // activity
+            // atividade
           </button>
         </div>
       </div>
@@ -123,7 +117,7 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
               <button
                 onClick={() => onSelectProjectModal(currentProject)}
                 className="absolute top-2.5 right-2.5 p-1.5 rounded bg-[#070510]/80 text-slate-300 hover:text-[#c77dff] border border-[#9d4edd]/40 cursor-pointer"
-                title="Expand Details"
+                title="Expandir Detalhes"
               >
                 <Maximize2 className="w-3.5 h-3.5" />
               </button>
@@ -184,7 +178,7 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
               className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-md font-mono text-xs font-bold bg-gradient-to-r from-[#9d4edd] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-md shadow-[#9d4edd]/20 transition-all cursor-pointer text-center"
             >
               <Play className="w-3.5 h-3.5 fill-white" />
-              <span>// VIEW LIVE DEMO</span>
+              <span>// VER DEMO AO VIVO</span>
             </a>
 
             <button
@@ -192,7 +186,7 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
               className="flex items-center justify-center gap-1 px-3 py-2 rounded-md font-mono text-xs bg-[#110d2a] border border-[#9d4edd]/30 text-[#c77dff] hover:border-[#c77dff] transition-all cursor-pointer"
             >
               <Maximize2 className="w-3.5 h-3.5" />
-              <span>// INSPECT</span>
+              <span>// INSPECIONAR</span>
             </button>
           </div>
         </div>
@@ -205,14 +199,14 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
           <div className="flex items-center justify-between text-xs font-mono text-slate-400 pb-1">
             <div className="flex items-center gap-1 text-[#c77dff]">
               <Filter className="w-3 h-3" />
-              <span>filter by:</span>
+              <span>filtrar por:</span>
               <button
                 onClick={() => setActivityFilter('all')}
                 className={`ml-1 px-1.5 py-0.5 rounded ${
                   activityFilter === 'all' ? 'bg-[#9d4edd] text-white font-bold' : 'hover:text-white'
                 }`}
               >
-                all
+                todos
               </button>
               <button
                 onClick={() => setActivityFilter('commits')}
@@ -226,15 +220,15 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
 
             <div className="flex items-center gap-1 text-emerald-400 text-[11px]">
               <TrendingUp className="w-3 h-3" />
-              <span>+34% this month</span>
+              <span>+34% este mês</span>
             </div>
           </div>
 
           {/* SVG Commit Activity Line & Area Graph */}
           <div className="p-3 rounded-lg bg-[#05030e] border border-[#9d4edd]/25">
             <div className="text-[11px] font-mono text-slate-400 mb-2 flex items-center justify-between">
-              <span>// Annual Commit Velocity</span>
-              <span className="text-[#f72585] font-semibold">3,842 Total Commits</span>
+              <span>// Velocidade Anual de Commits</span>
+              <span className="text-[#f72585] font-semibold">3.842 Commits Totais</span>
             </div>
 
             <div className="w-full overflow-hidden">
@@ -245,9 +239,7 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
                     <stop offset="100%" stopColor="#f72585" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
-                {/* Area Fill */}
                 <polygon points={areaPoints} fill="url(#purpleGradient)" />
-                {/* Smooth Polyline */}
                 <polyline
                   fill="none"
                   stroke="#c77dff"
@@ -271,9 +263,8 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
 
           {/* Top Languages Distribution */}
           <div className="p-3 rounded-lg bg-[#080514] border border-[#9d4edd]/20 space-y-2">
-            <div className="text-[11px] font-mono text-[#c77dff] font-semibold">// Language Stack Breakdown</div>
+            <div className="text-[11px] font-mono text-[#c77dff] font-semibold">// Distribuição de Linguagens</div>
             
-            {/* Visual Bar Segment */}
             <div className="w-full h-2 rounded-full overflow-hidden flex bg-slate-900">
               {LANGUAGE_DISTRIBUTION.map((lang) => (
                 <div
@@ -285,7 +276,6 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
               ))}
             </div>
 
-            {/* Legend Labels */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pt-1 text-[10px] font-mono">
               {LANGUAGE_DISTRIBUTION.map((lang) => (
                 <div key={lang.name} className="flex items-center gap-1.5 text-slate-300">
@@ -301,7 +291,7 @@ export default function ShowcaseWidget({ onSelectProjectModal }) {
           <div className="p-2.5 rounded-lg bg-[#05030e] border border-[#9d4edd]/15 space-y-1.5">
             <div className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
               <Activity className="w-3 h-3 text-[#f72585] animate-pulse" />
-              <span>// live_commit_stream</span>
+              <span>// stream_commits_ao_vivo</span>
             </div>
 
             <div className="space-y-1 max-h-24 overflow-y-auto pr-1">

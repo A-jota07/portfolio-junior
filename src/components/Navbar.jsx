@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Code, Terminal, Sparkles, Command, Check, Copy, Lock } from 'lucide-react';
+import { Search, Terminal, Sparkles, Check, Copy, Lock } from 'lucide-react';
 
 export default function Navbar({ activeSection, setActiveSection, filterQuery, setFilterQuery, onHireClick }) {
   const [copied, setCopied] = useState(false);
 
   const navItems = [
-    { id: 'home', label: '_home', comment: '// main landing' },
-    { id: 'about-me', label: '_about-me', comment: '// bio & experience' },
-    { id: 'projects', label: '_projects', comment: '// showcase gallery' },
-    { id: 'skills', label: '_skills', comment: '// tech stack' }
+    { id: 'home', label: '_inicio', comment: '// página principal' },
+    { id: 'about-me', label: '_sobre-mim', comment: '// bio & experiência' },
+    { id: 'projects', label: '_projetos', comment: '// galeria de trabalhos' },
+    { id: 'skills', label: '_habilidades', comment: '// stack tecnológica' }
   ];
 
   const handleCopyEmail = () => {
@@ -46,7 +46,7 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
           <Link
             to="/admin"
             className="flex items-center gap-1 text-[#f72585] hover:text-white transition-colors"
-            title="Admin CRUD Dashboard"
+            title="Painel Admin CRUD"
           >
             <Lock className="w-3 h-3" />
             <span>[// admin]</span>
@@ -60,7 +60,7 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
           <button 
             onClick={handleCopyEmail}
             className="hidden md:flex items-center gap-1.5 text-slate-300 hover:text-[#c77dff] transition-colors cursor-pointer"
-            title="Copy email to clipboard"
+            title="Copiar e-mail para a área de transferência"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             <span className="text-xs">michael.weaver@dev.tech</span>
@@ -106,7 +106,7 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
               type="text"
               value={filterQuery}
               onChange={(e) => setFilterQuery(e.target.value)}
-              placeholder="// filter skills & projects..."
+              placeholder="// filtrar habilidades & projetos..."
               className="w-full bg-[#080514] border border-[#9d4edd]/30 rounded px-3 py-1 pl-8 text-xs text-slate-200 placeholder-slate-500 font-mono focus:outline-none focus:border-[#c77dff] focus:ring-1 focus:ring-[#c77dff]/50 transition-all"
             />
             {filterQuery && (
@@ -125,7 +125,7 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
             className="flex items-center gap-1.5 px-3 py-1 rounded text-xs font-mono font-medium bg-gradient-to-r from-[#9d4edd] to-[#7209b7] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-md shadow-[#9d4edd]/20 transition-all transform active:scale-95 cursor-pointer whitespace-nowrap"
           >
             <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-spin" style={{ animationDuration: '6s' }} />
-            <span>// hire_me</span>
+            <span>// contratar_me</span>
           </button>
         </div>
       </div>

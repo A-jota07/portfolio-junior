@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PERSONAL_INFO, CODE_SNIPPETS } from '../data/portfolioData';
-import { Terminal, Copy, Check, ExternalLink, Download, Mail, Play, Sparkles, Code2, ArrowRight } from 'lucide-react';
+import { Terminal, Copy, Check, Mail, Play, Sparkles, Code2 } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from './Icons';
 
 export default function HeroSection({ onExploreClick, onContactClick }) {
@@ -14,13 +14,13 @@ export default function HeroSection({ onExploreClick, onContactClick }) {
       case 'config':
         return CODE_SNIPPETS.developerConfig;
       case 'experience':
-        return `// Experience Summary & Key Achievements
-const careerSnapshot = {
-  currentRole: "Lead Full Stack & AI Architect @ TechCorp",
-  experience: "${PERSONAL_INFO.stats.experienceYears}",
-  keyDomains: ["AI Agents & RAG", "Distributed Systems", "React & Web Tooling"],
-  openSource: "${PERSONAL_INFO.stats.reposContributed} GitHub repositories",
-  availability: "${PERSONAL_INFO.status}"
+        return `// Resumo de Experiência & Principais Conquistas
+const resumoCarreira = {
+  cargoAtual: "Arquiteto Full Stack & IA Senior @ TechCorp",
+  experiencia: "${PERSONAL_INFO.stats.experienceYears}",
+  dominiosChave: ["Agentes de IA & RAG", "Sistemas Distribuídos", "React & Ferramentas Web"],
+  openSource: "${PERSONAL_INFO.stats.reposContributed} repositórios no GitHub",
+  disponibilidade: "${PERSONAL_INFO.status}"
 };`;
       default:
         return CODE_SNIPPETS.contactInfo;
@@ -46,7 +46,7 @@ const careerSnapshot = {
 
         {/* Main Monospace Greeting */}
         <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-mono text-white mb-3 leading-tight">
-          <span className="text-[#f72585] text-glow-purple">&gt;&gt;</span> Developer Profile:{' '}
+          <span className="text-[#f72585] text-glow-purple">&gt;&gt;</span> Perfil do Dev:{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#c77dff] to-[#9d4edd]">
             {PERSONAL_INFO.name}
           </span>
@@ -62,20 +62,20 @@ const careerSnapshot = {
         {/* Quick Highlights / Stats Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6">
           <div className="p-2.5 rounded-lg bg-[#0e0a22]/80 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 transition-colors">
-            <div className="text-[10px] text-slate-400 font-mono">// experience</div>
-            <div className="text-lg font-bold text-white font-mono">{PERSONAL_INFO.stats.experienceYears}</div>
+            <div className="text-[10px] text-slate-400 font-mono">// experiência</div>
+            <div className="text-base sm:text-lg font-bold text-white font-mono">{PERSONAL_INFO.stats.experienceYears}</div>
           </div>
           <div className="p-2.5 rounded-lg bg-[#0e0a22]/80 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 transition-colors">
-            <div className="text-[10px] text-slate-400 font-mono">// repos</div>
-            <div className="text-lg font-bold text-[#c77dff] font-mono">{PERSONAL_INFO.stats.reposContributed}</div>
+            <div className="text-[10px] text-slate-400 font-mono">// repositórios</div>
+            <div className="text-base sm:text-lg font-bold text-[#c77dff] font-mono">{PERSONAL_INFO.stats.reposContributed}</div>
           </div>
           <div className="p-2.5 rounded-lg bg-[#0e0a22]/80 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 transition-colors">
             <div className="text-[10px] text-slate-400 font-mono">// commits</div>
-            <div className="text-lg font-bold text-[#f72585] font-mono">{PERSONAL_INFO.stats.totalCommits}</div>
+            <div className="text-base sm:text-lg font-bold text-[#f72585] font-mono">{PERSONAL_INFO.stats.totalCommits}</div>
           </div>
           <div className="p-2.5 rounded-lg bg-[#0e0a22]/80 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 transition-colors">
-            <div className="text-[10px] text-slate-400 font-mono">// score</div>
-            <div className="text-lg font-bold text-emerald-400 font-mono">{PERSONAL_INFO.stats.codeQualityScore}</div>
+            <div className="text-[10px] text-slate-400 font-mono">// pontuação</div>
+            <div className="text-base sm:text-lg font-bold text-emerald-400 font-mono">{PERSONAL_INFO.stats.codeQualityScore}</div>
           </div>
         </div>
       </div>
@@ -94,7 +94,7 @@ const careerSnapshot = {
               }`}
             >
               <Code2 className="w-3 h-3 text-[#9d4edd]" />
-              contactInfo.js
+              contatoInfo.js
             </button>
             <button
               onClick={() => setActiveTab('config')}
@@ -105,7 +105,7 @@ const careerSnapshot = {
               }`}
             >
               <Terminal className="w-3 h-3 text-[#f72585]" />
-              devProfile.ts
+              perfilDev.ts
             </button>
             <button
               onClick={() => setActiveTab('experience')}
@@ -116,17 +116,17 @@ const careerSnapshot = {
               }`}
             >
               <Sparkles className="w-3 h-3 text-yellow-400" />
-              snapshot.json
+              resumo.json
             </button>
           </div>
 
           <button
             onClick={handleCopyCode}
             className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono text-slate-400 hover:text-[#c77dff] hover:bg-[#9d4edd]/10 transition-all cursor-pointer"
-            title="Copy code snippet"
+            title="Copiar snippet de código"
           >
             {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-            <span>{copied ? 'copied!' : 'copy'}</span>
+            <span>{copied ? 'copiado!' : 'copiar'}</span>
           </button>
         </div>
 
@@ -159,7 +159,7 @@ const careerSnapshot = {
           className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-md font-mono text-xs sm:text-sm font-semibold bg-gradient-to-r from-[#9d4edd] to-[#7209b7] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-lg shadow-[#9d4edd]/30 hover:shadow-[#9d4edd]/50 transition-all transform active:scale-95 cursor-pointer"
         >
           <Play className="w-4 h-4 fill-white" />
-          <span>// RUN_SHOWCASE</span>
+          <span>// VER_PROJETOS</span>
         </button>
 
         <button
@@ -167,7 +167,7 @@ const careerSnapshot = {
           className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-mono text-xs sm:text-sm font-medium bg-[#0e0a22] border border-[#9d4edd]/40 text-[#c77dff] hover:bg-[#9d4edd]/20 hover:border-[#c77dff] transition-all cursor-pointer"
         >
           <Mail className="w-4 h-4" />
-          <span>// contact_me</span>
+          <span>// contate_me</span>
         </button>
 
         <a
@@ -175,7 +175,7 @@ const careerSnapshot = {
           target="_blank"
           rel="noopener noreferrer"
           className="p-2.5 rounded-md bg-[#0e0a22] border border-[#9d4edd]/30 text-slate-300 hover:text-[#c77dff] hover:border-[#c77dff] transition-all cursor-pointer"
-          title="GitHub Profile"
+          title="Perfil no GitHub"
         >
           <GithubIcon className="w-4 h-4" />
         </a>
@@ -185,7 +185,7 @@ const careerSnapshot = {
           target="_blank"
           rel="noopener noreferrer"
           className="p-2.5 rounded-md bg-[#0e0a22] border border-[#9d4edd]/30 text-slate-300 hover:text-[#c77dff] hover:border-[#c77dff] transition-all cursor-pointer"
-          title="LinkedIn Profile"
+          title="Perfil no LinkedIn"
         >
           <LinkedinIcon className="w-4 h-4" />
         </a>

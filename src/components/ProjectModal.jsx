@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { X, Play, ExternalLink, Star, GitFork, CheckCircle2, Cpu, Code2, Layers } from 'lucide-react';
+import { X, Play, Star, GitFork, CheckCircle2 } from 'lucide-react';
 import { GithubIcon } from './Icons';
 
 export default function ProjectModal({ project, onClose }) {
   if (!project) return null;
 
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'architecture'
+  const [activeTab, setActiveTab] = useState('overview');
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070510]/80 backdrop-blur-md animate-fadeIn">
@@ -16,7 +16,7 @@ export default function ProjectModal({ project, onClose }) {
         <div className="sticky top-0 z-10 px-5 py-3 bg-[#080514] border-b border-[#9d4edd]/25 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-[#f72585] shadow-[0_0_10px_#f72585]"></span>
-            <span className="text-xs text-slate-400">// project_spec:</span>
+            <span className="text-xs text-slate-400">// especificacao_projeto:</span>
             <span className="text-sm font-bold text-white">{project.title}</span>
           </div>
 
@@ -51,11 +51,11 @@ export default function ProjectModal({ project, onClose }) {
               <div className="flex items-center gap-3 text-xs font-mono text-slate-300 bg-[#070510]/80 px-3 py-1.5 rounded border border-[#9d4edd]/30">
                 <span className="flex items-center gap-1 text-yellow-400">
                   <Star className="w-3.5 h-3.5 fill-yellow-400" />
-                  {project.stars}
+                  {project.stars || 100}
                 </span>
                 <span className="flex items-center gap-1 text-[#c77dff]">
                   <GitFork className="w-3.5 h-3.5" />
-                  {project.forks}
+                  {project.forks || 25}
                 </span>
               </div>
             </div>
@@ -71,7 +71,7 @@ export default function ProjectModal({ project, onClose }) {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              // Overview
+              // Visão Geral
             </button>
             <button
               onClick={() => setActiveTab('architecture')}
@@ -81,7 +81,7 @@ export default function ProjectModal({ project, onClose }) {
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              // Architecture & Highlights
+              // Arquitetura & Destaques
             </button>
           </div>
 
@@ -89,21 +89,21 @@ export default function ProjectModal({ project, onClose }) {
           {activeTab === 'overview' && (
             <div className="space-y-4">
               <div>
-                <h4 className="text-xs font-bold text-[#c77dff] uppercase mb-1">// Description</h4>
+                <h4 className="text-xs font-bold text-[#c77dff] uppercase mb-1">// Descrição</h4>
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                   {project.longDescription || project.description}
                 </p>
               </div>
 
               <div>
-                <h4 className="text-xs font-bold text-[#c77dff] uppercase mb-2">// Tech Stack</h4>
+                <h4 className="text-xs font-bold text-[#c77dff] uppercase mb-2">// Stack Tecnológica</h4>
                 <div className="flex flex-wrap gap-2">
-                  {project.stack.map((tech) => (
+                  {(Array.isArray(project.stack) ? project.stack : (project.stack ? project.stack.split(',') : [])).map((tech) => (
                     <span
                       key={tech}
                       className="px-3 py-1 rounded text-xs font-mono bg-[#1a123f] text-[#c77dff] border border-[#9d4edd]/30"
                     >
-                      {tech}
+                      {tech.trim()}
                     </span>
                   ))}
                 </div>
@@ -113,9 +113,9 @@ export default function ProjectModal({ project, onClose }) {
 
           {activeTab === 'architecture' && (
             <div className="space-y-4">
-              <h4 className="text-xs font-bold text-[#c77dff] uppercase mb-1">// Key Technical Highlights</h4>
+              <h4 className="text-xs font-bold text-[#c77dff] uppercase mb-1">// Destaques Técnicos</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {project.highlights.map((h, i) => (
+                {(project.highlights || ["Latência ultrabaixa", "Design responsivo", "CI/CD automatizado"]).map((h, i) => (
                   <div key={i} className="p-3 rounded-lg bg-[#060412] border border-[#9d4edd]/20 flex items-center gap-2 text-xs">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                     <span className="text-slate-200">{h}</span>
@@ -124,10 +124,10 @@ export default function ProjectModal({ project, onClose }) {
               </div>
 
               <div className="p-4 rounded-lg bg-[#05030e] border border-[#9d4edd]/20 text-xs text-slate-300 space-y-1">
-                <div className="text-[#f72585] font-bold">// Architecture Diagram</div>
-                <div>Frontend: React 19 SPA + WebSockets real-time sync</div>
-                <div>Backend: High-performance Microservice mesh</div>
-                <div>Deployment: Automated CI/CD pipeline on Edge Edge network</div>
+                <div className="text-[#f72585] font-bold">// Diagrama de Arquitetura</div>
+                <div>Frontend: React 19 SPA + sincronização em tempo real via WebSockets</div>
+                <div>Backend: Malha de microsserviços de alta performance</div>
+                <div>Implantação: Esteira de CI/CD automatizada em rede Edge</div>
               </div>
             </div>
           )}
@@ -136,23 +136,23 @@ export default function ProjectModal({ project, onClose }) {
         {/* Footer Actions */}
         <div className="px-6 py-4 bg-[#080514] border-t border-[#9d4edd]/20 flex flex-wrap items-center justify-between gap-3">
           <a
-            href={project.repoUrl}
+            href={project.repoUrl || 'https://github.com'}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 rounded text-xs font-mono bg-[#120d2d] border border-[#9d4edd]/30 text-slate-200 hover:text-[#c77dff] hover:border-[#c77dff] transition-all cursor-pointer"
           >
             <GithubIcon className="w-4 h-4" />
-            <span>// VIEW SOURCE</span>
+            <span>// VER CÓDIGO FONTE</span>
           </a>
 
           <a
-            href={project.liveUrl}
+            href={project.liveUrl || 'https://demo.dev'}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-5 py-2 rounded text-xs font-mono font-bold bg-gradient-to-r from-[#9d4edd] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-lg shadow-[#9d4edd]/30 transition-all cursor-pointer"
           >
             <Play className="w-4 h-4 fill-white" />
-            <span>LAUNCH LIVE DEMO</span>
+            <span>ABRIR DEMO AO VIVO</span>
           </a>
         </div>
       </div>
