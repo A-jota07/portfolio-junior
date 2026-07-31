@@ -5,7 +5,6 @@ import HeroSection from './components/HeroSection';
 import ShowcaseWidget from './components/ShowcaseWidget';
 import AboutMeSection from './components/AboutMeSection';
 import ProjectsSection from './components/ProjectsSection';
-import InteractiveTerminal from './components/InteractiveTerminal';
 import ProjectModal from './components/ProjectModal';
 import RequireAuth from './components/RequireAuth';
 import LoginPage from './pages/LoginPage';
@@ -65,7 +64,7 @@ function PublicPortfolio() {
       {/* Main Container Wrapper */}
       <div className="relative z-10 max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8 space-y-8">
 
-        {/* CENTRAL MAIN FRAME (Visual Studio Code / Terminal IDE Aesthetic) */}
+        {/* CENTRAL MAIN FRAME (Visual Studio Code / Code Editor Aesthetic) */}
         <div className="rounded-2xl border border-[#9d4edd]/35 bg-[#0a0718]/95 shadow-[0_0_50px_rgba(157,78,221,0.2)] backdrop-blur-xl overflow-hidden transition-all duration-300">
           
           {/* Top Navbar */}
@@ -94,18 +93,9 @@ function PublicPortfolio() {
               />
             </div>
           </div>
-
-          {/* Bottom IDE Interactive Terminal */}
-          <div className="px-3 sm:px-6 pb-6">
-            <InteractiveTerminal
-              onExecuteCommand={(cmd) => {
-                if (cmd === 'hire') handleHireClick();
-              }}
-            />
-          </div>
         </div>
 
-        {/* PERIPHERAL SECTIONS (Surrounding sections linked directly below central frame) */}
+        {/* DIRECT FLOW SECTIONS (Hero Section -> Skills & Core Grid -> Projects Showcase) */}
         <div className="space-y-12 px-2 sm:px-4">
           {/* Section 02: About Me & Tech Stack */}
           <AboutMeSection
