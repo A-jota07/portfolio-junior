@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-dark: #070510;
+    --bg-card: #0e0a22;
+    --bg-card-hover: #150f33;
+    --border-purple: rgba(157, 78, 221, 0.25);
+    --border-purple-glow: rgba(199, 125, 255, 0.5);
+    --purple-primary: #9d4edd;
+    --purple-light: #c77dff;
+    --magenta-glow: #f72585;
+    --navy-deep: #05030b;
+  }
+
+  body {
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    background-color: #070510;
+    color: #e2e8f0;
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(157, 78, 221, 0.15) 0%, transparent 60%),
+      radial-gradient(circle at 85% 30%, rgba(247, 37, 133, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 15% 70%, rgba(114, 9, 183, 0.12) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+}
+
+/* Custom Studio Grid Pattern */
+.bg-studio-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(157, 78, 221, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(157, 78, 221, 0.05) 1px, transparent 1px);
+}
+
+.bg-dot-matrix {
+  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(199, 125, 255, 0.12) 1.2px, transparent 1.2px);
+}
+
+/* Glassmorphic Cyber Card */
+.glass-cyber {
+  background: rgba(14, 10, 34, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(157, 78, 221, 0.25);
+}
+
+.glass-cyber:hover {
+  border-color: rgba(199, 125, 255, 0.5);
+  box-shadow: 0 0 25px -5px rgba(157, 78, 221, 0.3);
+}
+
+.glow-purple {
+  box-shadow: 0 0 20px -3px rgba(157, 78, 221, 0.4);
+}
+
+.glow-magenta {
+  box-shadow: 0 0 20px -3px rgba(247, 37, 133, 0.4);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 12px rgba(199, 125, 255, 0.6);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #070510;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(157, 78, 221, 0.4);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(199, 125, 255, 0.8);
+}
+
+/* Cursor Blink Animation */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-cursor {
+  animation: blink 1s infinite;
+}
+
+/* Terminal Pulse */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(157, 78, 221, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(199, 125, 255, 0.6), 0 0 45px rgba(247, 37, 133, 0.2);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+/* Scanline Effect */
+.scanline {
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0),
+    rgba(255,255,255,0) 50%,
+    rgba(0, 0, 0, 0.3) 50%,
+    rgba(0, 0, 0, 0.3)
+  );
+  background-size: 100% 4px;
+}
