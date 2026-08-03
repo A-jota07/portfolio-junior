@@ -120,14 +120,100 @@ export const resetToCodeDefaults = () => {
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
 };
 
+// --- DATA MAPPERS FOR USER'S SUPABASE SCHEMA COMPATIBILITY ---
+const normalizeProjectFromDb = (p) => {
+  return {
+    id: p.id,
+    title: p.title || '',
+    subtitle: p.subtitle || p.category || '',
+    description: p.description || '',
+    category: p.category || 'Desenvolvimento Web',
+    stack: Array.isArray(p.technologies) ? p.technologies : (Array.isArray(p.stack) ? p.stack : (p.technologies ? [p.technologies] : [])),
+    repoUrl: p.github_url || p.repoUrl || 'https://github.com/A-jota07',
+    previewImage: p.preview_image || p.previewImage || p.demo_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop',
+    tag: p.badge || p.tag || 'DESTAQUE',
+    created_at: p.created_at
+  };
+};
+
+const normalizeProjectToDb = (p) => {
+  const stackArr = Array.isArray(p.stack) ? p.stack : (typeof p.stack === 'string' ? p.stack.split(',').map(s => s.trim()) : []);
+  const dbObj = {
+    title: p.title,
+    description: p.description || '',
+    category: p.category || 'Desenvolvimento Web',
+    technologies: stackArr,
+    github_url: p.repoUrl || 'https://github.com/A-jota07',
+    demo_url: p.repoUrl || '',
+    badge: p.tag || 'DESTAQUE'
+  };
+  if (p.id && typeof p.id === 'string' && !p.id.startsWith('proj-')) {
+    dbObj.id = p.id;
+  }
+  return dbObj;
+};
+
+const normalizeSkillFromDb = (s) => {
+  return {
+    id: s.id,
+    category: s.category || 'Frontend & UI',
+    name: s.name || '',
+    level: s.percentage !== undefined && s.percentage !== null ? s.percentage : (s.level || 80),
+    experience: s.years_exp || s.experience || '3 anos',
+    tag: s.tag || 'Especialista'
+  };
+};
+
+const normalizeSkillToDb = (s) => {
+  const dbObj = {
+    category: s.category || 'Frontend & UI',
+    name: s.name,
+    years_exp: s.experience || '3 anos',
+    percentage: parseInt(s.level, 10) || 80,
+    tag: s.tag || 'Especialista'
+  };
+  if (s.id && typeof s.id === 'string' && !s.id.startsWith('sk-')) {
+    dbObj.id = s.id;
+  }
+  return dbObj;
+};
+
+const normalizeProfileFromDb = (prof) => {
+  return {
+    name: prof.name || PERSONAL_INFO.name,
+    title: prof.role || prof.title || PERSONAL_INFO.title,
+    specialization: prof.role || PERSONAL_INFO.specialization,
+    location: prof.location || PERSONAL_INFO.location,
+    status: prof.available_for_hire ? 'Disponível para Projetos' : 'Ocupado',
+    email: prof.email || PERSONAL_INFO.contact.email,
+    github: prof.github || PERSONAL_INFO.contact.github,
+    linkedin: prof.linkedin || PERSONAL_INFO.contact.linkedin,
+    bioText: prof.bio_text || prof.bioText || "Sou um Desenvolvedor Full Stack apaixonado por aplicações web de alta performance e ecossistemas React.",
+    philosophy: prof.philosophy || "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões.",
+    availability: prof.available_for_hire !== false ? "DISPONÍVEL PARA CONTRATAÇÃO" : "INDISPONÍVEL NO MOMENTO"
+  };
+};
+
+const normalizeProfileToDb = (prof) => {
+  return {
+    name: prof.name || 'Alexandre Jr',
+    role: prof.title || prof.specialization || 'Desenvolvedor Full Stack Jr',
+    location: prof.location || 'São Paulo, SP',
+    available_for_hire: prof.availability ? !prof.availability.includes('INDISPONÍVEL') : true,
+    bio_text: prof.bioText || '',
+    philosophy: prof.philosophy || ''
+  };
+};
+
 // --- PROJECTS SERVICE ---
 export const fetchProjects = async () => {
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
       if (!error && Array.isArray(data)) {
-        localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(data));
-        return data;
+        const normalized = data.map(normalizeProjectFromDb);
+        localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(normalized));
+        return normalized;
       } else if (error) {
         console.warn('Erro ao buscar projetos no Supabase:', error.message);
       }
@@ -143,10 +229,13 @@ export const saveProject = async (projectData) => {
   let supabaseError = null;
   if (isSupabaseConfigured()) {
     try {
-      const { data, error } = await supabase.from('projects').upsert([projectData]);
+      const dbPayload = normalizeProjectToDb(projectData);
+      const { data, error } = await supabase.from('projects').upsert([dbPayload]).select();
       if (error) {
         console.error('Erro ao salvar projeto no Supabase:', error.message);
         supabaseError = error.message;
+      } else if (data && data[0]) {
+        projectData = normalizeProjectFromDb(data[0]);
       }
     } catch (err) {
       console.warn('Erro ao salvar projeto no Supabase, fallback local:', err);
@@ -196,8 +285,9 @@ export const fetchSkills = async () => {
     try {
       const { data, error } = await supabase.from('skills').select('*');
       if (!error && Array.isArray(data)) {
-        localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(data));
-        return data;
+        const normalized = data.map(normalizeSkillFromDb);
+        localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(normalized));
+        return normalized;
       } else if (error) {
         console.warn('Erro ao buscar habilidades no Supabase:', error.message);
       }
@@ -210,6 +300,23 @@ export const fetchSkills = async () => {
 };
 
 export const saveSkill = async (skillData) => {
+  let supabaseError = null;
+  if (isSupabaseConfigured()) {
+    try {
+      const dbPayload = normalizeSkillToDb(skillData);
+      const { data, error } = await supabase.from('skills').upsert([dbPayload]).select();
+      if (error) {
+        console.error('Erro ao salvar habilidade no Supabase:', error.message);
+        supabaseError = error.message;
+      } else if (data && data[0]) {
+        skillData = normalizeSkillFromDb(data[0]);
+      }
+    } catch (err) {
+      console.warn('Erro ao salvar habilidade no Supabase, fallback local:', err);
+      supabaseError = err.message;
+    }
+  }
+
   const currentSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
   const existsIdx = currentSkills.findIndex(s => s.id === skillData.id);
   
@@ -221,20 +328,6 @@ export const saveSkill = async (skillData) => {
     updatedSkills = [...currentSkills, skillData];
   }
   setStoredItem(STORAGE_KEYS.SKILLS, updatedSkills);
-
-  let supabaseError = null;
-  if (isSupabaseConfigured()) {
-    try {
-      const { data, error } = await supabase.from('skills').upsert([skillData]);
-      if (error) {
-        console.error('Erro ao salvar habilidade no Supabase:', error.message);
-        supabaseError = error.message;
-      }
-    } catch (err) {
-      console.warn('Erro ao salvar habilidade no Supabase, fallback local:', err);
-      supabaseError = err.message;
-    }
-  }
 
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
   return { success: true, data: skillData, error: supabaseError };
@@ -264,8 +357,12 @@ export const deleteSkill = async (id) => {
 export const fetchProfileInfo = async () => {
   if (isSupabaseConfigured()) {
     try {
-      const { data, error } = await supabase.from('profile_info').select('*').single();
-      if (!error && data) return data;
+      const { data, error } = await supabase.from('profile_info').select('*').limit(1).single();
+      if (!error && data) {
+        const normalized = normalizeProfileFromDb(data);
+        localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(normalized));
+        return normalized;
+      }
     } catch (err) {
       console.warn('Erro ao buscar perfil no Supabase, usando local:', err);
     }
@@ -274,22 +371,26 @@ export const fetchProfileInfo = async () => {
 };
 
 export const saveProfileInfo = async (profileData) => {
-  const profileToSave = { ...profileData, id: 'main-profile' };
-  
+  let supabaseError = null;
   if (isSupabaseConfigured()) {
     try {
-      const { data, error } = await supabase.from('profile_info').upsert([profileToSave]);
-      if (!error) {
-        window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-        return { success: true, data };
+      const dbPayload = normalizeProfileToDb(profileData);
+      const { data, error } = await supabase.from('profile_info').upsert([dbPayload]).select();
+      if (error) {
+        console.error('Erro ao salvar perfil no Supabase:', error.message);
+        supabaseError = error.message;
+      } else if (data && data[0]) {
+        profileData = normalizeProfileFromDb(data[0]);
       }
     } catch (err) {
       console.warn('Erro ao salvar perfil no Supabase, fallback local:', err);
+      supabaseError = err.message;
     }
   }
 
-  setStoredItem(STORAGE_KEYS.PROFILE, profileToSave);
-  return { success: true, data: profileToSave };
+  setStoredItem(STORAGE_KEYS.PROFILE, profileData);
+  window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+  return { success: true, data: profileData, error: supabaseError };
 };
 
 // --- AUTHENTICATION SERVICE ---
