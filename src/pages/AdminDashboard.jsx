@@ -637,24 +637,31 @@ export default function AdminDashboard() {
 
               {/* 3. Categoria (Input/Select Misto) */}
               <div>
-                <label className="text-slate-400 font-mono">// 3. Categoria (Selecione ou digite uma nova)</label>
+                <label htmlFor="project_category" className="text-slate-400 font-mono">// 3. Categoria (Selecione ou digite uma nova)</label>
                 <input
                   type="text"
-                  list="category-suggestions"
+                  list="category-options"
+                  name="project_category"
+                  id="project_category"
+                  autoComplete="off"
+                  data-lpignore="true"
+                  data-form-type="other"
                   required
                   value={editingProject.category || ''}
                   onChange={(e) => setEditingProject({ ...editingProject, category: e.target.value })}
-                  placeholder="Ex: Desenvolvimento Web, Mobile, IA & Automação, Sistemas"
+                  placeholder="Selecione ou digite uma categoria..."
                   className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
                 />
-                <datalist id="category-suggestions">
+                <datalist id="category-options">
                   <option value="Desenvolvimento Web" />
+                  <option value="Sistemas & Backend" />
                   <option value="Mobile" />
                   <option value="IA & Automação" />
-                  <option value="Sistemas" />
-                  <option value="Infraestrutura" />
-                  <option value="Segurança" />
-                  <option value="UI/UX" />
+                  <option value="Data Science & Analytics" />
+                  <option value="APIs & Microserviços" />
+                  <option value="DevOps & Cloud" />
+                  <option value="UI/UX & Frontend" />
+                  <option value="Ferramentas & CLI" />
                 </datalist>
               </div>
 
