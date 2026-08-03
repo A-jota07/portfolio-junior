@@ -5,20 +5,13 @@
 
 -- 1. TABELA DE PROJETOS (projects)
 CREATE TABLE IF NOT EXISTS public.projects (
-  id TEXT PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
-  subtitle TEXT,
   description TEXT NOT NULL,
   category TEXT NOT NULL,
-  tag TEXT DEFAULT 'DESTAQUE',
-  stack TEXT[] NOT NULL DEFAULT '{}',
-  stars INT DEFAULT 100,
-  forks INT DEFAULT 20,
-  commits INT DEFAULT 50,
-  "liveUrl" TEXT,
-  "repoUrl" TEXT,
-  "previewImage" TEXT,
-  highlights TEXT[] DEFAULT '{}',
+  technologies TEXT[] NOT NULL DEFAULT '{}',
+  github_url TEXT,
+  cover_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

@@ -136,24 +136,20 @@ const normalizeProjectFromDb = (p) => {
     category: p.category || 'Desenvolvimento Web',
     stack: Array.isArray(p.technologies) ? p.technologies : (Array.isArray(p.stack) ? p.stack : (p.technologies ? [p.technologies] : [])),
     repoUrl: p.github_url || p.repoUrl || 'https://github.com/A-jota07',
-    previewImage: p.preview_image || p.previewImage || p.demo_url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop',
-    tag: p.badge || p.tag || 'DESTAQUE',
+    previewImage: p.cover_url || p.preview_image || p.previewImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop',
     created_at: p.created_at
   };
 };
 
 const normalizeProjectToDb = (p) => {
-  const stackArr = Array.isArray(p.stack) ? p.stack : (typeof p.stack === 'string' ? p.stack.split(',').map(s => s.trim()) : []);
+  const stackArr = Array.isArray(p.stack) ? p.stack : (typeof p.stack === 'string' ? p.stack.split(',').map(s => s.trim()).filter(Boolean) : []);
   const dbObj = {
-    title: p.title,
-    subtitle: p.subtitle || '',
+    title: p.title || '',
     description: p.description || '',
     category: p.category || 'Desenvolvimento Web',
     technologies: stackArr,
     github_url: p.repoUrl || 'https://github.com/A-jota07',
-    preview_image: p.previewImage || '',
-    demo_url: p.repoUrl || '',
-    badge: p.tag || 'DESTAQUE'
+    cover_url: p.previewImage || p.cover_url || ''
   };
   if (p.id && isValidUuid(p.id)) {
     dbObj.id = p.id;
