@@ -121,6 +121,12 @@ export const resetToCodeDefaults = () => {
 };
 
 // --- DATA MAPPERS FOR USER'S SUPABASE SCHEMA COMPATIBILITY ---
+const isValidUuid = (str) => {
+  if (typeof str !== 'string') return false;
+  const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return uuidRegex.test(str);
+};
+
 const normalizeProjectFromDb = (p) => {
   return {
     id: p.id,
@@ -147,7 +153,7 @@ const normalizeProjectToDb = (p) => {
     demo_url: p.repoUrl || '',
     badge: p.tag || 'DESTAQUE'
   };
-  if (p.id && typeof p.id === 'string' && !p.id.startsWith('proj-')) {
+  if (p.id && isValidUuid(p.id)) {
     dbObj.id = p.id;
   }
   return dbObj;
@@ -172,7 +178,7 @@ const normalizeSkillToDb = (s) => {
     percentage: parseInt(s.level, 10) || 80,
     tag: s.tag || 'Especialista'
   };
-  if (s.id && typeof s.id === 'string' && !s.id.startsWith('sk-')) {
+  if (s.id && isValidUuid(s.id)) {
     dbObj.id = s.id;
   }
   return dbObj;
@@ -244,7 +250,7 @@ export const saveProject = async (projectData) => {
   }
 
   const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
-  const existsIdx = currentProjects.findIndex(p => p.id === projectData.id);
+  const existsIdx = currentProjects.findIndex(p => p.id === projectData.id || p.title === projectData.title);
   
   let updatedProjects;
   if (existsIdx >= 0) {
@@ -259,20 +265,25 @@ export const saveProject = async (projectData) => {
   return { success: true, data: projectData, error: supabaseError };
 };
 
-export const deleteProject = async (id) => {
+export const deleteProject = async (id, title) => {
   if (isSupabaseConfigured()) {
     try {
-      const { error } = await supabase.from('projects').delete().eq('id', id);
-      if (error) {
-        console.error('Erro ao deletar no Supabase:', error.message);
+      if (isValidUuid(id)) {
+        const { error } = await supabase.from('projects').delete().eq('id', id);
+        if (error) console.error('Erro ao deletar projeto por ID no Supabase:', error.message);
+      } else if (title) {
+        const { error } = await supabase.from('projects').delete().eq('title', title);
+        if (error) console.error('Erro ao deletar projeto por título no Supabase:', error.message);
+      } else {
+        await supabase.from('projects').delete().eq('id', id);
       }
     } catch (err) {
-      console.warn('Erro ao deletar no Supabase, fallback local:', err);
+      console.warn('Erro ao deletar no Supabase:', err);
     }
   }
 
   const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
-  const updatedProjects = currentProjects.filter(p => p.id !== id);
+  const updatedProjects = currentProjects.filter(p => p.id !== id && (title ? p.title !== title : true));
   setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
 
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
@@ -333,21 +344,26 @@ export const saveSkill = async (skillData) => {
   return { success: true, data: skillData, error: supabaseError };
 };
 
-export const deleteSkill = async (id) => {
-  const currentSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
-  const updatedSkills = currentSkills.filter(s => s.id !== id);
-  setStoredItem(STORAGE_KEYS.SKILLS, updatedSkills);
-
+export const deleteSkill = async (id, name) => {
   if (isSupabaseConfigured()) {
     try {
-      const { error } = await supabase.from('skills').delete().eq('id', id);
-      if (error) {
-        console.error('Erro ao deletar habilidade no Supabase:', error.message);
+      if (isValidUuid(id)) {
+        const { error } = await supabase.from('skills').delete().eq('id', id);
+        if (error) console.error('Erro ao deletar habilidade por ID no Supabase:', error.message);
+      } else if (name) {
+        const { error } = await supabase.from('skills').delete().eq('name', name);
+        if (error) console.error('Erro ao deletar habilidade por nome no Supabase:', error.message);
+      } else {
+        await supabase.from('skills').delete().eq('id', id);
       }
     } catch (err) {
-      console.warn('Erro ao deletar habilidade no Supabase, fallback local:', err);
+      console.warn('Erro ao deletar habilidade no Supabase:', err);
     }
   }
+
+  const currentSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
+  const updatedSkills = currentSkills.filter(s => s.id !== id && (name ? s.name !== name : true));
+  setStoredItem(STORAGE_KEYS.SKILLS, updatedSkills);
 
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
   return { success: true };
