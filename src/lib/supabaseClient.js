@@ -146,10 +146,12 @@ const normalizeProjectToDb = (p) => {
   const stackArr = Array.isArray(p.stack) ? p.stack : (typeof p.stack === 'string' ? p.stack.split(',').map(s => s.trim()) : []);
   const dbObj = {
     title: p.title,
+    subtitle: p.subtitle || '',
     description: p.description || '',
     category: p.category || 'Desenvolvimento Web',
     technologies: stackArr,
     github_url: p.repoUrl || 'https://github.com/A-jota07',
+    preview_image: p.previewImage || '',
     demo_url: p.repoUrl || '',
     badge: p.tag || 'DESTAQUE'
   };
@@ -213,13 +215,12 @@ const normalizeProfileToDb = (prof) => {
 
 // --- PROJECTS SERVICE ---
 export const fetchProjects = async () => {
+  let dbProjects = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
       if (!error && Array.isArray(data)) {
-        const normalized = data.map(normalizeProjectFromDb);
-        localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(normalized));
-        return normalized;
+        dbProjects = data.map(normalizeProjectFromDb);
       } else if (error) {
         console.warn('Erro ao buscar projetos no Supabase:', error.message);
       }
@@ -228,7 +229,20 @@ export const fetchProjects = async () => {
     }
   }
 
-  return getStoredItem(STORAGE_KEYS.PROJECTS, []);
+  const localProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
+
+  if (dbProjects !== null) {
+    const merged = [...dbProjects];
+    localProjects.forEach(lp => {
+      if (!merged.some(dp => (dp.id === lp.id || dp.title === lp.title))) {
+        merged.push(lp);
+      }
+    });
+    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(merged));
+    return merged;
+  }
+
+  return localProjects;
 };
 
 export const saveProject = async (projectData) => {
@@ -292,13 +306,12 @@ export const deleteProject = async (id, title) => {
 
 // --- SKILLS SERVICE ---
 export const fetchSkills = async () => {
+  let dbSkills = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('skills').select('*');
       if (!error && Array.isArray(data)) {
-        const normalized = data.map(normalizeSkillFromDb);
-        localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(normalized));
-        return normalized;
+        dbSkills = data.map(normalizeSkillFromDb);
       } else if (error) {
         console.warn('Erro ao buscar habilidades no Supabase:', error.message);
       }
@@ -307,7 +320,20 @@ export const fetchSkills = async () => {
     }
   }
 
-  return getStoredItem(STORAGE_KEYS.SKILLS, []);
+  const localSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
+
+  if (dbSkills !== null) {
+    const merged = [...dbSkills];
+    localSkills.forEach(ls => {
+      if (!merged.some(ds => (ds.id === ls.id || ds.name === ls.name))) {
+        merged.push(ls);
+      }
+    });
+    localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(merged));
+    return merged;
+  }
+
+  return localSkills;
 };
 
 export const saveSkill = async (skillData) => {
