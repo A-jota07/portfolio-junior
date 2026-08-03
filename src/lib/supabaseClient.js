@@ -398,6 +398,12 @@ export const loginAdmin = async (email, password) => {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
+      if (error.message?.toLowerCase().includes('invalid api key') || error.message?.toLowerCase().includes('api key')) {
+        return { 
+          success: false, 
+          error: 'Chave do Supabase inválida (Invalid API Key). Verifique a variável VITE_SUPABASE_ANON_KEY no painel da Vercel (deve ser a chave anon public que começa com eyJ...).' 
+        };
+      }
       return { success: false, error: error.message };
     }
     if (data?.session) {
