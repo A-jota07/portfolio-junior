@@ -211,13 +211,12 @@ const normalizeProfileToDb = (prof) => {
 
 // --- PROJECTS SERVICE ---
 export const fetchProjects = async () => {
+  let dbProjects = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
       if (!error && Array.isArray(data)) {
-        const normalized = data.map(normalizeProjectFromDb);
-        localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(normalized));
-        return normalized;
+        dbProjects = data.map(normalizeProjectFromDb);
       } else if (error) {
         console.warn('Erro ao buscar projetos no Supabase:', error.message);
       }
@@ -226,7 +225,21 @@ export const fetchProjects = async () => {
     }
   }
 
-  return getStoredItem(STORAGE_KEYS.PROJECTS, []);
+  const localProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
+
+  if (dbProjects !== null) {
+    const merged = [...dbProjects];
+    // Preserve local unsynced items (items created locally whose ID is not a valid UUID yet)
+    localProjects.forEach(lp => {
+      if (!isValidUuid(lp.id) && !merged.some(dp => dp.title === lp.title)) {
+        merged.push(lp);
+      }
+    });
+    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(merged));
+    return merged;
+  }
+
+  return localProjects;
 };
 
 export const saveProject = async (projectData) => {
@@ -293,13 +306,12 @@ export const deleteProject = async (id, title) => {
 
 // --- SKILLS SERVICE ---
 export const fetchSkills = async () => {
+  let dbSkills = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('skills').select('*');
       if (!error && Array.isArray(data)) {
-        const normalized = data.map(normalizeSkillFromDb);
-        localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(normalized));
-        return normalized;
+        dbSkills = data.map(normalizeSkillFromDb);
       } else if (error) {
         console.warn('Erro ao buscar habilidades no Supabase:', error.message);
       }
@@ -308,7 +320,21 @@ export const fetchSkills = async () => {
     }
   }
 
-  return getStoredItem(STORAGE_KEYS.SKILLS, []);
+  const localSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
+
+  if (dbSkills !== null) {
+    const merged = [...dbSkills];
+    // Preserve local unsynced items (items created locally whose ID is not a valid UUID yet)
+    localSkills.forEach(ls => {
+      if (!isValidUuid(ls.id) && !merged.some(ds => ds.name === ls.name)) {
+        merged.push(ls);
+      }
+    });
+    localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(merged));
+    return merged;
+  }
+
+  return localSkills;
 };
 
 export const saveSkill = async (skillData) => {

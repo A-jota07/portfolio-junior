@@ -155,16 +155,24 @@ export default function AdminDashboard() {
     };
     delete projectToSave.stackInput;
 
-    await saveProject(projectToSave);
+    const res = await saveProject(projectToSave);
     setProjectModalOpen(false);
-    showToast(`Projeto "${projectToSave.title}" salvo com sucesso!`);
+    if (res && res.error) {
+      showToast(`⚠️ Salvo localmente! (Aviso Supabase: ${res.error})`);
+    } else {
+      showToast(`Projeto "${projectToSave.title}" salvo com sucesso!`);
+    }
     loadData();
   };
 
   const handleDeleteProjectItem = async (id, title) => {
     if (window.confirm(`Tem certeza de que deseja excluir o projeto "${title}"?`)) {
-      await deleteProject(id);
-      showToast(`Projeto excluído.`);
+      const res = await deleteProject(id, title);
+      if (res && res.error) {
+        showToast(`⚠️ Removido localmente. (Aviso Supabase: ${res.error})`);
+      } else {
+        showToast(`Projeto excluído com sucesso.`);
+      }
       loadData();
     }
   };
@@ -188,16 +196,24 @@ export default function AdminDashboard() {
 
   const handleSaveSkillForm = async (e) => {
     e.preventDefault();
-    await saveSkill(editingSkill);
+    const res = await saveSkill(editingSkill);
     setSkillModalOpen(false);
-    showToast(`Habilidade "${editingSkill.name}" salva!`);
+    if (res && res.error) {
+      showToast(`⚠️ Salva localmente! (Aviso Supabase: ${res.error})`);
+    } else {
+      showToast(`Habilidade "${editingSkill.name}" salva com sucesso!`);
+    }
     loadData();
   };
 
   const handleDeleteSkillItem = async (id, name) => {
     if (window.confirm(`Excluir habilidade "${name}"?`)) {
-      await deleteSkill(id);
-      showToast(`Habilidade removida.`);
+      const res = await deleteSkill(id, name);
+      if (res && res.error) {
+        showToast(`⚠️ Removida localmente. (Aviso Supabase: ${res.error})`);
+      } else {
+        showToast(`Habilidade removida com sucesso.`);
+      }
       loadData();
     }
   };
