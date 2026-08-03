@@ -211,58 +211,41 @@ const normalizeProfileToDb = (prof) => {
 
 // --- PROJECTS SERVICE ---
 export const fetchProjects = async () => {
-  let dbProjects = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
-      if (!error && Array.isArray(data)) {
-        dbProjects = data.map(normalizeProjectFromDb);
-      } else if (error) {
-        console.warn('Erro ao buscar projetos no Supabase:', error.message);
+      if (error) {
+        console.error('Erro ao buscar projetos no Supabase:', error.message);
+      } else if (Array.isArray(data)) {
+        return data.map(normalizeProjectFromDb);
       }
     } catch (err) {
-      console.warn('Erro ao buscar projetos no Supabase, usando armazenamento local:', err);
+      console.error('Erro ao buscar projetos no Supabase:', err);
     }
   }
-
-  const localProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
-
-  if (dbProjects !== null) {
-    const merged = [...dbProjects];
-    // Preserve local unsynced items (items created locally whose ID is not a valid UUID yet)
-    localProjects.forEach(lp => {
-      if (!isValidUuid(lp.id) && !merged.some(dp => dp.title === lp.title)) {
-        merged.push(lp);
-      }
-    });
-    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(merged));
-    return merged;
-  }
-
-  return localProjects;
+  return getStoredItem(STORAGE_KEYS.PROJECTS, []);
 };
 
 export const saveProject = async (projectData) => {
-  let supabaseError = null;
   if (isSupabaseConfigured()) {
     try {
       const dbPayload = normalizeProjectToDb(projectData);
       const { data, error } = await supabase.from('projects').upsert([dbPayload]).select();
       if (error) {
         console.error('Erro ao salvar projeto no Supabase:', error.message);
-        supabaseError = error.message;
-      } else if (data && data[0]) {
-        projectData = normalizeProjectFromDb(data[0]);
+        return { success: false, error: error.message };
       }
+      const savedObj = data && data[0] ? normalizeProjectFromDb(data[0]) : projectData;
+      window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+      return { success: true, data: savedObj };
     } catch (err) {
-      console.warn('Erro ao salvar projeto no Supabase, fallback local:', err);
-      supabaseError = err.message;
+      console.error('Exceção ao salvar no Supabase:', err);
+      return { success: false, error: err.message || 'Falha ao salvar no Supabase' };
     }
   }
 
   const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
   const existsIdx = currentProjects.findIndex(p => p.id === projectData.id || p.title === projectData.title);
-  
   let updatedProjects;
   if (existsIdx >= 0) {
     updatedProjects = [...currentProjects];
@@ -271,93 +254,77 @@ export const saveProject = async (projectData) => {
     updatedProjects = [projectData, ...currentProjects];
   }
   setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
-
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-  return { success: !supabaseError, data: projectData, error: supabaseError };
+  return { success: true, data: projectData };
 };
 
 export const deleteProject = async (id, title) => {
-  let supabaseError = null;
   if (isSupabaseConfigured()) {
     try {
+      let query;
       if (isValidUuid(id)) {
-        const { error } = await supabase.from('projects').delete().eq('id', id);
-        if (error) supabaseError = error.message;
+        query = supabase.from('projects').delete().eq('id', id);
       } else if (title) {
-        const { error } = await supabase.from('projects').delete().eq('title', title);
-        if (error) supabaseError = error.message;
+        query = supabase.from('projects').delete().eq('title', title);
       } else {
-        const { error } = await supabase.from('projects').delete().eq('id', id);
-        if (error) supabaseError = error.message;
+        query = supabase.from('projects').delete().eq('id', id);
       }
+      const { error } = await query;
+      if (error) {
+        console.error('Erro ao deletar no Supabase:', error.message);
+        return { success: false, error: error.message };
+      }
+      window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+      return { success: true };
     } catch (err) {
-      console.warn('Erro ao deletar no Supabase:', err);
-      supabaseError = err.message;
+      console.error('Exceção ao deletar no Supabase:', err);
+      return { success: false, error: err.message };
     }
   }
 
   const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
   const updatedProjects = currentProjects.filter(p => p.id !== id && (title ? p.title !== title : true));
   setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
-
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-  return { success: !supabaseError, error: supabaseError };
+  return { success: true };
 };
 
 // --- SKILLS SERVICE ---
 export const fetchSkills = async () => {
-  let dbSkills = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('skills').select('*');
-      if (!error && Array.isArray(data)) {
-        dbSkills = data.map(normalizeSkillFromDb);
-      } else if (error) {
-        console.warn('Erro ao buscar habilidades no Supabase:', error.message);
+      if (error) {
+        console.error('Erro ao buscar habilidades no Supabase:', error.message);
+      } else if (Array.isArray(data)) {
+        return data.map(normalizeSkillFromDb);
       }
     } catch (err) {
-      console.warn('Erro ao buscar habilidades no Supabase, usando local:', err);
+      console.error('Erro ao buscar habilidades no Supabase:', err);
     }
   }
-
-  const localSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
-
-  if (dbSkills !== null) {
-    const merged = [...dbSkills];
-    // Preserve local unsynced items (items created locally whose ID is not a valid UUID yet)
-    localSkills.forEach(ls => {
-      if (!isValidUuid(ls.id) && !merged.some(ds => ds.name === ls.name)) {
-        merged.push(ls);
-      }
-    });
-    localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(merged));
-    return merged;
-  }
-
-  return localSkills;
+  return getStoredItem(STORAGE_KEYS.SKILLS, []);
 };
 
 export const saveSkill = async (skillData) => {
-  let supabaseError = null;
   if (isSupabaseConfigured()) {
     try {
       const dbPayload = normalizeSkillToDb(skillData);
       const { data, error } = await supabase.from('skills').upsert([dbPayload]).select();
       if (error) {
         console.error('Erro ao salvar habilidade no Supabase:', error.message);
-        supabaseError = error.message;
-      } else if (data && data[0]) {
-        skillData = normalizeSkillFromDb(data[0]);
+        return { success: false, error: error.message };
       }
+      const savedObj = data && data[0] ? normalizeSkillFromDb(data[0]) : skillData;
+      window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+      return { success: true, data: savedObj };
     } catch (err) {
-      console.warn('Erro ao salvar habilidade no Supabase, fallback local:', err);
-      supabaseError = err.message;
+      return { success: false, error: err.message };
     }
   }
 
   const currentSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
-  const existsIdx = currentSkills.findIndex(s => s.id === skillData.id);
-  
+  const existsIdx = currentSkills.findIndex(s => s.id === skillData.id || s.name === skillData.name);
   let updatedSkills;
   if (existsIdx >= 0) {
     updatedSkills = [...currentSkills];
@@ -366,32 +333,36 @@ export const saveSkill = async (skillData) => {
     updatedSkills = [...currentSkills, skillData];
   }
   setStoredItem(STORAGE_KEYS.SKILLS, updatedSkills);
-
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-  return { success: true, data: skillData, error: supabaseError };
+  return { success: true, data: skillData };
 };
 
 export const deleteSkill = async (id, name) => {
   if (isSupabaseConfigured()) {
     try {
+      let query;
       if (isValidUuid(id)) {
-        const { error } = await supabase.from('skills').delete().eq('id', id);
-        if (error) console.error('Erro ao deletar habilidade por ID no Supabase:', error.message);
+        query = supabase.from('skills').delete().eq('id', id);
       } else if (name) {
-        const { error } = await supabase.from('skills').delete().eq('name', name);
-        if (error) console.error('Erro ao deletar habilidade por nome no Supabase:', error.message);
+        query = supabase.from('skills').delete().eq('name', name);
       } else {
-        await supabase.from('skills').delete().eq('id', id);
+        query = supabase.from('skills').delete().eq('id', id);
       }
+      const { error } = await query;
+      if (error) {
+        console.error('Erro ao deletar habilidade no Supabase:', error.message);
+        return { success: false, error: error.message };
+      }
+      window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+      return { success: true };
     } catch (err) {
-      console.warn('Erro ao deletar habilidade no Supabase:', err);
+      return { success: false, error: err.message };
     }
   }
 
   const currentSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
   const updatedSkills = currentSkills.filter(s => s.id !== id && (name ? s.name !== name : true));
   setStoredItem(STORAGE_KEYS.SKILLS, updatedSkills);
-
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
   return { success: true };
 };
@@ -402,38 +373,35 @@ export const fetchProfileInfo = async () => {
     try {
       const { data, error } = await supabase.from('profile_info').select('*').limit(1).single();
       if (!error && data) {
-        const normalized = normalizeProfileFromDb(data);
-        localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(normalized));
-        return normalized;
+        return normalizeProfileFromDb(data);
       }
     } catch (err) {
-      console.warn('Erro ao buscar perfil no Supabase, usando local:', err);
+      console.error('Erro ao buscar perfil no Supabase:', err);
     }
   }
   return getStoredItem(STORAGE_KEYS.PROFILE, {});
 };
 
 export const saveProfileInfo = async (profileData) => {
-  let supabaseError = null;
   if (isSupabaseConfigured()) {
     try {
       const dbPayload = normalizeProfileToDb(profileData);
       const { data, error } = await supabase.from('profile_info').upsert([dbPayload]).select();
       if (error) {
         console.error('Erro ao salvar perfil no Supabase:', error.message);
-        supabaseError = error.message;
-      } else if (data && data[0]) {
-        profileData = normalizeProfileFromDb(data[0]);
+        return { success: false, error: error.message };
       }
+      const savedObj = data && data[0] ? normalizeProfileFromDb(data[0]) : profileData;
+      window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+      return { success: true, data: savedObj };
     } catch (err) {
-      console.warn('Erro ao salvar perfil no Supabase, fallback local:', err);
-      supabaseError = err.message;
+      return { success: false, error: err.message };
     }
   }
 
   setStoredItem(STORAGE_KEYS.PROFILE, profileData);
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-  return { success: true, data: profileData, error: supabaseError };
+  return { success: true, data: profileData };
 };
 
 // --- AUTHENTICATION SERVICE ---

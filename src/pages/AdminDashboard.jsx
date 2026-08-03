@@ -156,23 +156,24 @@ export default function AdminDashboard() {
     delete projectToSave.stackInput;
 
     const res = await saveProject(projectToSave);
-    setProjectModalOpen(false);
     if (res && res.error) {
-      showToast(`⚠️ Salvo localmente! (Aviso Supabase: ${res.error})`);
-    } else {
-      showToast(`Projeto "${projectToSave.title}" salvo com sucesso!`);
+      alert(`⚠️ ERRO DO SUPABASE AO SALVAR:\n\n${res.error}\n\nVerifique se o banco Supabase está configurado corretamente.`);
+      return;
     }
+
+    setProjectModalOpen(false);
+    showToast(`Projeto "${projectToSave.title}" salvo no Supabase com sucesso!`);
     loadData();
   };
 
   const handleDeleteProjectItem = async (id, title) => {
-    if (window.confirm(`Tem certeza de que deseja excluir o projeto "${title}"?`)) {
+    if (window.confirm(`Tem certeza de que deseja excluir o projeto "${title}" do Supabase?`)) {
       const res = await deleteProject(id, title);
       if (res && res.error) {
-        showToast(`⚠️ Removido localmente. (Aviso Supabase: ${res.error})`);
-      } else {
-        showToast(`Projeto excluído com sucesso.`);
+        alert(`⚠️ ERRO DO SUPABASE AO EXCLUIR:\n\n${res.error}`);
+        return;
       }
+      showToast(`Projeto excluído no Supabase com sucesso.`);
       loadData();
     }
   };
@@ -197,23 +198,23 @@ export default function AdminDashboard() {
   const handleSaveSkillForm = async (e) => {
     e.preventDefault();
     const res = await saveSkill(editingSkill);
-    setSkillModalOpen(false);
     if (res && res.error) {
-      showToast(`⚠️ Salva localmente! (Aviso Supabase: ${res.error})`);
-    } else {
-      showToast(`Habilidade "${editingSkill.name}" salva com sucesso!`);
+      alert(`⚠️ ERRO DO SUPABASE AO SALVAR HABILIDADE:\n\n${res.error}`);
+      return;
     }
+    setSkillModalOpen(false);
+    showToast(`Habilidade "${editingSkill.name}" salva no Supabase com sucesso!`);
     loadData();
   };
 
   const handleDeleteSkillItem = async (id, name) => {
-    if (window.confirm(`Excluir habilidade "${name}"?`)) {
+    if (window.confirm(`Excluir habilidade "${name}" do Supabase?`)) {
       const res = await deleteSkill(id, name);
       if (res && res.error) {
-        showToast(`⚠️ Removida localmente. (Aviso Supabase: ${res.error})`);
-      } else {
-        showToast(`Habilidade removida com sucesso.`);
+        alert(`⚠️ ERRO DO SUPABASE AO EXCLUIR HABILIDADE:\n\n${res.error}`);
+        return;
       }
+      showToast(`Habilidade removida no Supabase com sucesso.`);
       loadData();
     }
   };
