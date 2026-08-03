@@ -316,6 +316,18 @@ export default function AdminDashboard() {
           </button>
         </div>
 
+        {!isSupabaseConfigured() && (
+          <div className="p-3.5 rounded-xl bg-yellow-950/40 border border-yellow-500/30 text-yellow-300 text-xs font-mono flex items-start gap-2.5 shadow-lg">
+            <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <span className="font-bold tracking-wide text-yellow-400">// AVISO DE DEPLOY: MODO ARMAZENAMENTO LOCAL ATIVO</span>
+              <p className="text-slate-300 leading-relaxed">
+                As variáveis de ambiente do Supabase ainda não foram cadastradas na Vercel. Por conta disso, alterações (exclusões e edições) salvam apenas na memória deste navegador. Para sincronizar as alterações em tempo real em todos os navegadores e celulares, cadastre <code className="text-yellow-200 bg-black/50 px-1.5 py-0.5 rounded border border-yellow-500/20">VITE_SUPABASE_URL</code> e <code className="text-yellow-200 bg-black/50 px-1.5 py-0.5 rounded border border-yellow-500/20">VITE_SUPABASE_ANON_KEY</code> no painel da Vercel.
+              </p>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="p-12 text-center text-xs font-mono text-slate-400">
             // Buscando registros no banco de dados...
