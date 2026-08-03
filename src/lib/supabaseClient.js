@@ -211,12 +211,13 @@ const normalizeProfileToDb = (prof) => {
 
 // --- PROJECTS SERVICE ---
 export const fetchProjects = async () => {
-  let dbProjects = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
       if (!error && Array.isArray(data)) {
-        dbProjects = data.map(normalizeProjectFromDb);
+        const normalized = data.map(normalizeProjectFromDb);
+        localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(normalized));
+        return normalized;
       } else if (error) {
         console.warn('Erro ao buscar projetos no Supabase:', error.message);
       }
@@ -225,20 +226,7 @@ export const fetchProjects = async () => {
     }
   }
 
-  const localProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
-
-  if (dbProjects !== null) {
-    const merged = [...dbProjects];
-    localProjects.forEach(lp => {
-      if (!merged.some(dp => (dp.id === lp.id || dp.title === lp.title))) {
-        merged.push(lp);
-      }
-    });
-    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(merged));
-    return merged;
-  }
-
-  return localProjects;
+  return getStoredItem(STORAGE_KEYS.PROJECTS, []);
 };
 
 export const saveProject = async (projectData) => {
@@ -272,23 +260,26 @@ export const saveProject = async (projectData) => {
   setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
 
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-  return { success: true, data: projectData, error: supabaseError };
+  return { success: !supabaseError, data: projectData, error: supabaseError };
 };
 
 export const deleteProject = async (id, title) => {
+  let supabaseError = null;
   if (isSupabaseConfigured()) {
     try {
       if (isValidUuid(id)) {
         const { error } = await supabase.from('projects').delete().eq('id', id);
-        if (error) console.error('Erro ao deletar projeto por ID no Supabase:', error.message);
+        if (error) supabaseError = error.message;
       } else if (title) {
         const { error } = await supabase.from('projects').delete().eq('title', title);
-        if (error) console.error('Erro ao deletar projeto por título no Supabase:', error.message);
+        if (error) supabaseError = error.message;
       } else {
-        await supabase.from('projects').delete().eq('id', id);
+        const { error } = await supabase.from('projects').delete().eq('id', id);
+        if (error) supabaseError = error.message;
       }
     } catch (err) {
       console.warn('Erro ao deletar no Supabase:', err);
+      supabaseError = err.message;
     }
   }
 
@@ -297,17 +288,18 @@ export const deleteProject = async (id, title) => {
   setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
 
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-  return { success: true };
+  return { success: !supabaseError, error: supabaseError };
 };
 
 // --- SKILLS SERVICE ---
 export const fetchSkills = async () => {
-  let dbSkills = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('skills').select('*');
       if (!error && Array.isArray(data)) {
-        dbSkills = data.map(normalizeSkillFromDb);
+        const normalized = data.map(normalizeSkillFromDb);
+        localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(normalized));
+        return normalized;
       } else if (error) {
         console.warn('Erro ao buscar habilidades no Supabase:', error.message);
       }
@@ -316,20 +308,7 @@ export const fetchSkills = async () => {
     }
   }
 
-  const localSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
-
-  if (dbSkills !== null) {
-    const merged = [...dbSkills];
-    localSkills.forEach(ls => {
-      if (!merged.some(ds => (ds.id === ls.id || ds.name === ls.name))) {
-        merged.push(ls);
-      }
-    });
-    localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(merged));
-    return merged;
-  }
-
-  return localSkills;
+  return getStoredItem(STORAGE_KEYS.SKILLS, []);
 };
 
 export const saveSkill = async (skillData) => {
