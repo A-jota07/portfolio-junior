@@ -25,7 +25,7 @@ export const STORAGE_KEYS = {
 const getStoredItem = (key, fallback) => {
   try {
     const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : fallback;
+    return item !== null ? JSON.parse(item) : fallback;
   } catch (e) {
     return fallback;
   }
@@ -40,12 +40,12 @@ const setStoredItem = (key, data) => {
   }
 };
 
-// Isolated initial seeds (does NOT overwrite existing user data)
-if (!localStorage.getItem(STORAGE_KEYS.PROJECTS)) {
+// Initial seeds for localStorage ONLY if key has never been initialized (is null)
+if (localStorage.getItem(STORAGE_KEYS.PROJECTS) === null) {
   setStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
 }
 
-if (!localStorage.getItem(STORAGE_KEYS.SKILLS)) {
+if (localStorage.getItem(STORAGE_KEYS.SKILLS) === null) {
   const flattenedSkills = [];
   SKILL_CATEGORIES.forEach((cat) => {
     cat.skills.forEach((sk, idx) => {
@@ -62,7 +62,7 @@ if (!localStorage.getItem(STORAGE_KEYS.SKILLS)) {
   setStoredItem(STORAGE_KEYS.SKILLS, flattenedSkills);
 }
 
-if (!localStorage.getItem(STORAGE_KEYS.PROFILE)) {
+if (localStorage.getItem(STORAGE_KEYS.PROFILE) === null) {
   setStoredItem(STORAGE_KEYS.PROFILE, {
     name: PERSONAL_INFO.name,
     title: PERSONAL_INFO.title,
@@ -72,7 +72,7 @@ if (!localStorage.getItem(STORAGE_KEYS.PROFILE)) {
     email: PERSONAL_INFO.contact.email,
     github: PERSONAL_INFO.contact.github,
     linkedin: PERSONAL_INFO.contact.linkedin,
-    bioText: "Sou um Desenvolvedor Full Stack Senior apaixonado por aplicações web de alta performance, ecossistemas React modernos e software interativo orientado a IA.",
+    bioText: "Sou um Desenvolvedor Full Stack apaixonado por aplicações web de alta performance e ecossistemas React.",
     philosophy: "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões.",
     availability: "DISPONÍVEL PARA CONTRATAÇÃO"
   });
@@ -110,7 +110,7 @@ export const resetToCodeDefaults = () => {
     email: PERSONAL_INFO.contact.email,
     github: PERSONAL_INFO.contact.github,
     linkedin: PERSONAL_INFO.contact.linkedin,
-    bioText: "Sou um Desenvolvedor Full Stack Senior apaixonado por aplicações web de alta performance, ecossistemas React modernos e software interativo orientado a IA.",
+    bioText: "Sou um Desenvolvedor Full Stack apaixonado por aplicações web de alta performance e ecossistemas React.",
     philosophy: "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões.",
     availability: "DISPONÍVEL PARA CONTRATAÇÃO"
   });
@@ -120,31 +120,38 @@ export const resetToCodeDefaults = () => {
 
 // --- PROJECTS SERVICE ---
 export const fetchProjects = async () => {
+  let dbProjects = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
-      if (!error && data && data.length > 0) return data;
+      if (!error && Array.isArray(data)) {
+        dbProjects = data;
+      } else if (error) {
+        console.warn('Erro ao buscar projetos no Supabase:', error.message);
+      }
     } catch (err) {
       console.warn('Erro ao buscar projetos no Supabase, usando armazenamento local:', err);
     }
   }
-  return getStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
+
+  const localProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
+
+  if (dbProjects !== null) {
+    const merged = [...dbProjects];
+    localProjects.forEach(lp => {
+      if (!merged.some(dp => dp.id === lp.id)) {
+        merged.push(lp);
+      }
+    });
+    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(merged));
+    return merged;
+  }
+
+  return localProjects;
 };
 
 export const saveProject = async (projectData) => {
-  if (isSupabaseConfigured()) {
-    try {
-      const { data, error } = await supabase.from('projects').upsert([projectData]);
-      if (!error) {
-        window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-        return { success: true, data };
-      }
-    } catch (err) {
-      console.warn('Erro ao salvar projeto no Supabase, fallback para local:', err);
-    }
-  }
-
-  const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
+  const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
   const existsIdx = currentProjects.findIndex(p => p.id === projectData.id);
   
   let updatedProjects;
@@ -154,56 +161,79 @@ export const saveProject = async (projectData) => {
   } else {
     updatedProjects = [projectData, ...currentProjects];
   }
-
   setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
-  return { success: true, data: projectData };
+
+  let supabaseError = null;
+  if (isSupabaseConfigured()) {
+    try {
+      const { data, error } = await supabase.from('projects').upsert([projectData]);
+      if (error) {
+        console.error('Erro ao salvar projeto no Supabase:', error.message);
+        supabaseError = error.message;
+      }
+    } catch (err) {
+      console.warn('Erro ao salvar projeto no Supabase, fallback local:', err);
+      supabaseError = err.message;
+    }
+  }
+
+  window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+  return { success: true, data: projectData, error: supabaseError };
 };
 
 export const deleteProject = async (id) => {
+  const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
+  const updatedProjects = currentProjects.filter(p => p.id !== id);
+  setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
+
   if (isSupabaseConfigured()) {
     try {
       const { error } = await supabase.from('projects').delete().eq('id', id);
-      if (!error) {
-        window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-        return { success: true };
+      if (error) {
+        console.error('Erro ao deletar no Supabase:', error.message);
       }
     } catch (err) {
       console.warn('Erro ao deletar no Supabase, fallback local:', err);
     }
   }
 
-  const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
-  const updatedProjects = currentProjects.filter(p => p.id !== id);
-  setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
+  window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
   return { success: true };
 };
 
 // --- SKILLS SERVICE ---
 export const fetchSkills = async () => {
+  let dbSkills = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('skills').select('*');
-      if (!error && data && data.length > 0) return data;
+      if (!error && Array.isArray(data)) {
+        dbSkills = data;
+      } else if (error) {
+        console.warn('Erro ao buscar habilidades no Supabase:', error.message);
+      }
     } catch (err) {
       console.warn('Erro ao buscar habilidades no Supabase, usando local:', err);
     }
   }
-  return getStoredItem(STORAGE_KEYS.SKILLS, []);
+
+  const localSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
+
+  if (dbSkills !== null) {
+    const merged = [...dbSkills];
+    localSkills.forEach(ls => {
+      if (!merged.some(ds => ds.id === ls.id)) {
+        merged.push(ls);
+      }
+    });
+    localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(merged));
+    return merged;
+  }
+
+  return localSkills;
 };
 
 export const saveSkill = async (skillData) => {
-  if (isSupabaseConfigured()) {
-    try {
-      const { data, error } = await supabase.from('skills').upsert([skillData]);
-      if (!error) {
-        window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-        return { success: true, data };
-      }
-    } catch (err) {
-      console.warn('Erro ao salvar habilidade no Supabase, fallback local:', err);
-    }
-  }
-
   const currentSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
   const existsIdx = currentSkills.findIndex(s => s.id === skillData.id);
   
@@ -214,27 +244,43 @@ export const saveSkill = async (skillData) => {
   } else {
     updatedSkills = [...currentSkills, skillData];
   }
-
   setStoredItem(STORAGE_KEYS.SKILLS, updatedSkills);
-  return { success: true, data: skillData };
+
+  let supabaseError = null;
+  if (isSupabaseConfigured()) {
+    try {
+      const { data, error } = await supabase.from('skills').upsert([skillData]);
+      if (error) {
+        console.error('Erro ao salvar habilidade no Supabase:', error.message);
+        supabaseError = error.message;
+      }
+    } catch (err) {
+      console.warn('Erro ao salvar habilidade no Supabase, fallback local:', err);
+      supabaseError = err.message;
+    }
+  }
+
+  window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+  return { success: true, data: skillData, error: supabaseError };
 };
 
 export const deleteSkill = async (id) => {
+  const currentSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
+  const updatedSkills = currentSkills.filter(s => s.id !== id);
+  setStoredItem(STORAGE_KEYS.SKILLS, updatedSkills);
+
   if (isSupabaseConfigured()) {
     try {
       const { error } = await supabase.from('skills').delete().eq('id', id);
-      if (!error) {
-        window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
-        return { success: true };
+      if (error) {
+        console.error('Erro ao deletar habilidade no Supabase:', error.message);
       }
     } catch (err) {
       console.warn('Erro ao deletar habilidade no Supabase, fallback local:', err);
     }
   }
 
-  const currentSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
-  const updatedSkills = currentSkills.filter(s => s.id !== id);
-  setStoredItem(STORAGE_KEYS.SKILLS, updatedSkills);
+  window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
   return { success: true };
 };
 
@@ -272,29 +318,80 @@ export const saveProfileInfo = async (profileData) => {
 
 // --- AUTHENTICATION SERVICE ---
 export const loginAdmin = async (email, password) => {
-  if (isSupabaseConfigured()) {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (!error && data.session) {
-        setStoredItem(STORAGE_KEYS.AUTH_SESSION, data.session);
-        return { success: true, user: data.user, session: data.session };
-      }
-      if (error) return { success: false, error: error.message };
-    } catch (err) {
-      console.warn('Falha na autenticação Supabase, tentando demo local:', err);
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      return { success: false, error: error.message };
     }
+    if (data?.session) {
+      setStoredItem(STORAGE_KEYS.AUTH_SESSION, data.session);
+      return { success: true, user: data.user, session: data.session };
+    }
+    return { success: false, error: 'Sessão de autenticação inválida.' };
+  } catch (err) {
+    return { success: false, error: err.message || 'Erro de autenticação.' };
   }
+};
 
-  if (email === 'admin@dev.tech' && password === 'admin123') {
-    const demoSession = {
-      user: { id: 'admin-01', email: 'admin@dev.tech', role: 'admin' },
-      token: 'demo-jwt-token-998877'
+export const registerAdmin = async (email, password) => {
+  try {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    if (data?.session) {
+      setStoredItem(STORAGE_KEYS.AUTH_SESSION, data.session);
+    }
+    return { 
+      success: true, 
+      user: data.user, 
+      session: data.session, 
+      message: data.session ? 'Cadastro realizado com sucesso!' : 'Cadastro realizado! Verifique o e-mail para confirmação.' 
     };
-    setStoredItem(STORAGE_KEYS.AUTH_SESSION, demoSession);
-    return { success: true, user: demoSession.user, session: demoSession };
+  } catch (err) {
+    return { success: false, error: err.message || 'Erro ao registrar novo administrador.' };
   }
+};
 
-  return { success: false, error: 'Credenciais inválidas. Login de demo: admin@dev.tech / admin123' };
+export const resendConfirmationEmail = async (email) => {
+  try {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email
+    });
+    if (error) return { success: false, error: error.message };
+    return { success: true, message: 'E-mail de confirmação reenviado com sucesso! Verifique sua caixa de entrada e spam.' };
+  } catch (err) {
+    return { success: false, error: err.message || 'Erro ao reenviar e-mail de confirmação.' };
+  }
+};
+
+export const updateAdminAccount = async ({ email, password, displayName }) => {
+  try {
+    const updateAttributes = {};
+    if (email) updateAttributes.email = email;
+    if (password) updateAttributes.password = password;
+    if (displayName) updateAttributes.data = { displayName };
+
+    if (Object.keys(updateAttributes).length === 0) {
+      return { success: false, error: 'Preencha ao menos um campo para atualizar a conta.' };
+    }
+
+    const { data, error } = await supabase.auth.updateUser(updateAttributes);
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    const currentSession = getAdminSession();
+    if (currentSession && data?.user) {
+      currentSession.user = data.user;
+      setStoredItem(STORAGE_KEYS.AUTH_SESSION, currentSession);
+    }
+
+    return { success: true, user: data?.user, message: 'Configurações da conta atualizadas com sucesso!' };
+  } catch (err) {
+    return { success: false, error: err.message || 'Erro ao atualizar dados da conta.' };
+  }
 };
 
 export const logoutAdmin = async () => {
@@ -311,3 +408,30 @@ export const logoutAdmin = async () => {
 export const getAdminSession = () => {
   return getStoredItem(STORAGE_KEYS.AUTH_SESSION, null);
 };
+
+// --- REALTIME SUBSCRIPTION SERVICE ---
+export const subscribeToRealtimeUpdates = (callback) => {
+  if (!isSupabaseConfigured()) return () => {};
+
+  try {
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public' },
+        (payload) => {
+          window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
+          if (callback) callback(payload);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  } catch (err) {
+    console.warn('Erro ao configurar tempo real no Supabase:', err);
+    return () => {};
+  }
+};
+

@@ -1,22 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { loginAdmin } from '../lib/supabaseClient';
-import { Lock, Mail, ShieldCheck, Key, Sparkles, AlertTriangle } from 'lucide-react';
+import { loginAdmin, resendConfirmationEmail } from '../lib/supabaseClient';
+import { Lock, Mail, ShieldCheck, Key, AlertTriangle, CheckCircle2, Send } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/admin';
 
+  useEffect(() => {
+    // Temporary dev-mode notice for developer access without UI exposure
+    console.log('[DEV MODE] Credenciais de Demonstração (Developer Access):', {
+      email: 'admin@dev.tech',
+      senha: 'admin123'
+    });
+  }, []);
+
+  const handleResendEmail = async () => {
+    if (!email.trim()) {
+      setErrorMsg('Informe seu e-mail no campo abaixo para reenviar a confirmação.');
+      return;
+    }
+    setLoading(true);
+    const res = await resendConfirmationEmail(email);
+    setLoading(false);
+    if (res.success) {
+      setSuccessMsg(res.message);
+      setErrorMsg('');
+    } else {
+      setErrorMsg(res.error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg('');
+    setSuccessMsg('');
 
     const res = await loginAdmin(email, password);
     setLoading(false);
@@ -24,14 +50,12 @@ export default function LoginPage() {
     if (res.success) {
       navigate(from, { replace: true });
     } else {
-      setErrorMsg(res.error || 'Falha na autenticação');
+      if (res.error?.toLowerCase().includes('email not confirmed')) {
+        setErrorMsg('E-mail não confirmado. O Supabase exige a validação do e-mail enviado antes de realizar o login.');
+      } else {
+        setErrorMsg(res.error || 'Falha na autenticação');
+      }
     }
-  };
-
-  const handleFillDemo = () => {
-    setEmail('admin@dev.tech');
-    setPassword('admin123');
-    setErrorMsg('');
   };
 
   return (
@@ -70,15 +94,31 @@ export default function LoginPage() {
             <h1 className="text-xl font-extrabold font-mono text-white tracking-wide">
               &gt;&gt; Autenticação de Administrador
             </h1>
-            <p className="text-xs text-[#c77dff] font-mono">
-              // Insira suas credenciais para acessar o Dashboard CRUD
-            </p>
           </div>
 
           {errorMsg && (
-            <div className="p-3 rounded-lg bg-red-950/50 border border-red-500/40 text-red-300 text-xs font-mono flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-              <span>{errorMsg}</span>
+            <div className="p-3 rounded-lg bg-red-950/50 border border-red-500/40 text-red-300 text-xs font-mono space-y-2">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                <span>{errorMsg}</span>
+              </div>
+              {errorMsg.toLowerCase().includes('não confirmado') && (
+                <button
+                  type="button"
+                  onClick={handleResendEmail}
+                  className="mt-1 text-[11px] font-mono text-[#c77dff] hover:text-white underline cursor-pointer flex items-center gap-1.5 pt-1 border-t border-red-500/20"
+                >
+                  <Send className="w-3.5 h-3.5 text-yellow-400" />
+                  <span>Reenviar E-mail de Confirmação</span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {successMsg && (
+            <div className="p-3 rounded-lg bg-emerald-950/50 border border-emerald-500/40 text-emerald-300 text-xs font-mono flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <span>{successMsg}</span>
             </div>
           )}
 
@@ -97,7 +137,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@dev.tech"
+                  placeholder="seu-email@exemplo.com"
                   className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded-lg py-2.5 pl-10 pr-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-[#c77dff] focus:ring-1 focus:ring-[#c77dff]/50 transition-all font-mono"
                 />
               </div>
@@ -106,7 +146,7 @@ export default function LoginPage() {
             {/* Password Input */}
             <div className="space-y-1">
               <label className="text-xs font-mono text-slate-400 flex items-center gap-1">
-                <span>// senha_mestra</span>
+                <span>// senha</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
@@ -139,20 +179,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          {/* Quick Demo Credentials Helper */}
-          <div className="pt-3 border-t border-[#9d4edd]/15 text-center">
-            <button
-              onClick={handleFillDemo}
-              className="text-[11px] font-mono text-[#c77dff] hover:text-white flex items-center justify-center gap-1.5 mx-auto hover:underline cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-              <span>// Auto-preencher Credenciais de Demonstração</span>
-            </button>
-            <p className="text-[10px] text-slate-500 font-mono mt-1">
-              Login Demo: <code className="text-slate-300">admin@dev.tech</code> / <code className="text-slate-300">admin123</code>
-            </p>
-          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Play, Star, GitFork, CheckCircle2 } from 'lucide-react';
+import { X, CheckCircle2 } from 'lucide-react';
 import { GithubIcon } from './Icons';
 
 export default function ProjectModal({ project, onClose }) {
@@ -46,16 +46,8 @@ export default function ProjectModal({ project, onClose }) {
                 </span>
                 <h2 className="text-2xl font-extrabold text-white mt-1">{project.title}</h2>
                 <p className="text-xs text-[#c77dff]">{project.subtitle}</p>
-              </div>
-
-              <div className="flex items-center gap-3 text-xs font-mono text-slate-300 bg-[#070510]/80 px-3 py-1.5 rounded border border-[#9d4edd]/30">
-                <span className="flex items-center gap-1 text-yellow-400">
-                  <Star className="w-3.5 h-3.5 fill-yellow-400" />
-                  {project.stars || 100}
-                </span>
-                <span className="flex items-center gap-1 text-[#c77dff]">
-                  <GitFork className="w-3.5 h-3.5" />
-                  {project.forks || 25}
+                <span className="text-[10px] font-mono text-slate-400 block mt-1">
+                  // Desenvolvido por: Alexandre Jr // Desenvolvedor Full Stack Jr
                 </span>
               </div>
             </div>
@@ -134,25 +126,15 @@ export default function ProjectModal({ project, onClose }) {
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 bg-[#080514] border-t border-[#9d4edd]/20 flex flex-wrap items-center justify-between gap-3">
+        <div className="px-6 py-4 bg-[#080514] border-t border-[#9d4edd]/20 flex items-center justify-end">
           <a
             href={project.repoUrl || 'https://github.com'}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded text-xs font-mono bg-[#120d2d] border border-[#9d4edd]/30 text-slate-200 hover:text-[#c77dff] hover:border-[#c77dff] transition-all cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2 rounded text-xs font-mono font-bold bg-[#120d2d] border border-[#9d4edd]/30 text-slate-200 hover:text-[#c77dff] hover:border-[#c77dff] transition-all cursor-pointer"
           >
             <GithubIcon className="w-4 h-4" />
-            <span>// VER CÓDIGO FONTE</span>
-          </a>
-
-          <a
-            href={project.liveUrl || 'https://demo.dev'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-5 py-2 rounded text-xs font-mono font-bold bg-gradient-to-r from-[#9d4edd] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-lg shadow-[#9d4edd]/30 transition-all cursor-pointer"
-          >
-            <Play className="w-4 h-4 fill-white" />
-            <span>ABRIR DEMO AO VIVO</span>
+            <span>// VER CÓDIGO FONTE NO GITHUB</span>
           </a>
         </div>
       </div>

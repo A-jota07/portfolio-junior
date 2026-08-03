@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Terminal, Sparkles, Check, Copy, Lock } from 'lucide-react';
+import { Search, Terminal, Sparkles, Check, Copy } from 'lucide-react';
 
 export default function Navbar({ activeSection, setActiveSection, filterQuery, setFilterQuery, onHireClick }) {
   const [copied, setCopied] = useState(false);
@@ -13,7 +12,7 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
   ];
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText("michael.weaver@dev.tech");
+    navigator.clipboard.writeText("alexandrecassiodesouzajunior@gmail.com");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -41,17 +40,8 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
           </div>
         </div>
 
-        {/* System Status & Admin Link */}
+        {/* System Status */}
         <div className="flex items-center gap-4 text-[11px] font-mono">
-          <Link
-            to="/admin"
-            className="flex items-center gap-1 text-[#f72585] hover:text-white transition-colors"
-            title="Painel Admin CRUD"
-          >
-            <Lock className="w-3 h-3" />
-            <span>[// admin]</span>
-          </Link>
-
           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#9d4edd]/10 border border-[#9d4edd]/20 text-[#c77dff]">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span>main*</span>
@@ -63,7 +53,7 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
             title="Copiar e-mail para a área de transferência"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-            <span className="text-xs">michael.weaver@dev.tech</span>
+            <span className="text-xs">alexandrecassiodesouzajunior@gmail.com</span>
           </button>
         </div>
       </div>

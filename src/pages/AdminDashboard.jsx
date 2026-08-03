@@ -11,7 +11,10 @@ import {
   saveProfileInfo,
   logoutAdmin,
   isSupabaseConfigured,
-  resetToCodeDefaults
+  resetToCodeDefaults,
+  subscribeToRealtimeUpdates,
+  updateAdminAccount,
+  getAdminSession
 } from '../lib/supabaseClient';
 import {
   Plus,
@@ -26,7 +29,8 @@ import {
   Sliders,
   FolderPlus,
   UserCheck,
-  RefreshCw
+  RefreshCw,
+  Key
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -43,11 +47,34 @@ export default function AdminDashboard() {
   const [skillModalOpen, setSkillModalOpen] = useState(false);
   const [editingSkill, setEditingSkill] = useState(null);
 
+  const [accountEmail, setAccountEmail] = useState('');
+  const [accountPassword, setAccountPassword] = useState('');
+  const [accountDisplayName, setAccountDisplayName] = useState('');
+  const [accountSaving, setAccountSaving] = useState(false);
+
   const navigate = useNavigate();
 
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleSaveAccountSettings = async (e) => {
+    e.preventDefault();
+    setAccountSaving(true);
+    const res = await updateAdminAccount({
+      email: accountEmail.trim() || undefined,
+      password: accountPassword.trim() || undefined,
+      displayName: accountDisplayName.trim() || undefined
+    });
+    setAccountSaving(false);
+
+    if (res.success) {
+      showToast(res.message || 'Configurações da conta salvas!');
+      setAccountPassword('');
+    } else {
+      showToast(`⚠️ Error: ${res.error}`);
+    }
   };
 
   const loadData = async () => {
@@ -71,7 +98,14 @@ export default function AdminDashboard() {
       loadData();
     };
     window.addEventListener('portfolio_data_updated', handleUpdate);
-    return () => window.removeEventListener('portfolio_data_updated', handleUpdate);
+    const unsubscribeRealtime = subscribeToRealtimeUpdates(() => {
+      loadData();
+    });
+
+    return () => {
+      window.removeEventListener('portfolio_data_updated', handleUpdate);
+      unsubscribeRealtime();
+    };
   }, []);
 
   const handleResetDefaults = () => {
@@ -92,7 +126,7 @@ export default function AdminDashboard() {
     if (proj) {
       setEditingProject({
         ...proj,
-        stackInput: Array.isArray(proj.stack) ? proj.stack.join(', ') : proj.stack
+        stackInput: Array.isArray(proj.stack) ? proj.stack.join(', ') : (proj.stack || '')
       });
     } else {
       setEditingProject({
@@ -100,13 +134,9 @@ export default function AdminDashboard() {
         title: '',
         subtitle: '',
         description: '',
-        category: 'IA & Ferramentas',
-        tag: 'DESTAQUE',
+        category: 'Desenvolvimento Web',
         stackInput: 'React 19, TypeScript, Tailwind CSS',
-        stars: 100,
-        forks: 20,
-        liveUrl: 'https://demo.dev',
-        repoUrl: 'https://github.com/mweaver-dev',
+        repoUrl: 'https://github.com/A-jota07',
         previewImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop'
       });
     }
@@ -199,7 +229,7 @@ export default function AdminDashboard() {
                   {isSupabaseConfigured() ? '● SUPABASE CONECTADO' : '● MODO ARMAZENAMENTO LOCAL'}
                 </span>
               </div>
-              <p className="text-xs text-[#c77dff]">Usuário Autenticado: admin@dev.tech</p>
+              <p className="text-xs text-[#c77dff]">Usuário Autenticado: {getAdminSession()?.user?.email || profile.email || 'admin@dev.tech'}</p>
             </div>
           </div>
 
@@ -271,6 +301,18 @@ export default function AdminDashboard() {
           >
             <UserCheck className="w-4 h-4" />
             <span>// Editor de Perfil & Bio</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`px-4 py-2 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === 'settings'
+                ? 'bg-[#9d4edd] text-white shadow-lg shadow-[#9d4edd]/30'
+                : 'bg-[#0e0a22] text-slate-400 hover:text-slate-200 border border-[#9d4edd]/20'
+            }`}
+          >
+            <Key className="w-4 h-4" />
+            <span>// Configurações da Conta</span>
           </button>
         </div>
 
@@ -488,6 +530,67 @@ export default function AdminDashboard() {
                 </div>
               </form>
             )}
+
+            {/* TAB 4: ACCOUNT SETTINGS */}
+            {activeTab === 'settings' && (
+              <form onSubmit={handleSaveAccountSettings} className="p-6 rounded-xl bg-[#0c091d]/90 border border-[#9d4edd]/30 shadow-xl space-y-6 max-w-2xl">
+                <div className="flex items-center justify-between border-b border-[#9d4edd]/20 pb-4">
+                  <div>
+                    <h2 className="text-sm font-bold text-white font-mono flex items-center gap-2">
+                      <Key className="w-4 h-4 text-[#f72585]" />
+                      <span>// Configurações da Conta & Credenciais (Supabase Auth)</span>
+                    </h2>
+                    <p className="text-xs text-[#c77dff] font-mono mt-1">
+                      // Atualize e-mail, senha e nome de exibição do usuário admin
+                    </p>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={accountSaving}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg font-mono text-xs font-bold bg-gradient-to-r from-[#9d4edd] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-lg shadow-[#9d4edd]/30 transition-all cursor-pointer"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>{accountSaving ? 'SALVANDO...' : 'SALVAR CONFIGURAÇÕES'}</span>
+                  </button>
+                </div>
+
+                <div className="space-y-4 font-mono text-xs">
+                  <div className="space-y-1">
+                    <label className="text-slate-400">// Nome de Exibição / Profile Display Name</label>
+                    <input
+                      type="text"
+                      value={accountDisplayName}
+                      onChange={(e) => setAccountDisplayName(e.target.value)}
+                      placeholder={profile.name || "Alexandre Junior"}
+                      className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2.5 text-slate-200 focus:outline-none focus:border-[#c77dff]"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-slate-400">// Endereço de E-mail da Conta</label>
+                    <input
+                      type="email"
+                      value={accountEmail}
+                      onChange={(e) => setAccountEmail(e.target.value)}
+                      placeholder={getAdminSession()?.user?.email || "seu-email@exemplo.com"}
+                      className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2.5 text-slate-200 focus:outline-none focus:border-[#c77dff]"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-slate-400">// Nova Senha (mínimo 6 caracteres)</label>
+                    <input
+                      type="password"
+                      value={accountPassword}
+                      onChange={(e) => setAccountPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2.5 text-slate-200 focus:outline-none focus:border-[#c77dff]"
+                    />
+                  </div>
+                </div>
+              </form>
+            )}
           </>
         )}
       </main>
@@ -497,99 +600,124 @@ export default function AdminDashboard() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070510]/80 backdrop-blur-md">
           <form onSubmit={handleSaveProjectForm} className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-xl bg-[#0c091d] border border-[#9d4edd]/50 p-6 space-y-4 font-mono text-xs shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#9d4edd]/20 pb-3">
-              <h3 className="text-sm font-bold text-white">// Especificação do Editor de Projetos</h3>
-              <button type="button" onClick={() => setProjectModalOpen(false)} className="text-slate-400 hover:text-white">
+              <div className="flex items-center gap-2">
+                <FolderPlus className="w-4 h-4 text-[#f72585]" />
+                <h3 className="text-sm font-bold text-white">// Editor de Projetos — Alexandre Jr // Desenvolvedor Full Stack Jr</h3>
+              </div>
+              <button type="button" onClick={() => setProjectModalOpen(false)} className="text-slate-400 hover:text-white cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-3">
+              {/* 1. Título do Projeto */}
               <div>
-                <label className="text-slate-400">Título do Projeto</label>
+                <label className="text-slate-400 font-mono">// 1. Título do Projeto</label>
                 <input
                   type="text"
                   required
-                  value={editingProject.title}
+                  value={editingProject.title || ''}
                   onChange={(e) => setEditingProject({ ...editingProject, title: e.target.value })}
-                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
+                  placeholder="Ex: E-commerce Next.js, Dashboard Financeiro"
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
                 />
               </div>
 
+              {/* 2. Subtítulo */}
               <div>
-                <label className="text-slate-400">Subtítulo</label>
+                <label className="text-slate-400 font-mono">// 2. Subtítulo</label>
                 <input
                   type="text"
-                  value={editingProject.subtitle}
+                  value={editingProject.subtitle || ''}
                   onChange={(e) => setEditingProject({ ...editingProject, subtitle: e.target.value })}
-                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
+                  placeholder="Ex: Plataforma de comércio eletrônico com pagamentos via Pix"
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-400">Categoria</label>
-                  <select
-                    value={editingProject.category}
-                    onChange={(e) => setEditingProject({ ...editingProject, category: e.target.value })}
-                    className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
-                  >
-                    <option>IA & Ferramentas</option>
-                    <option>Infraestrutura</option>
-                    <option>Segurança</option>
-                    <option>UI/UX</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-slate-400">Etiqueta Badge</label>
-                  <input
-                    type="text"
-                    value={editingProject.tag}
-                    onChange={(e) => setEditingProject({ ...editingProject, tag: e.target.value })}
-                    className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
-                  />
-                </div>
+              {/* 3. Categoria (Input/Select Misto) */}
+              <div>
+                <label className="text-slate-400 font-mono">// 3. Categoria (Selecione ou digite uma nova)</label>
+                <input
+                  type="text"
+                  list="category-suggestions"
+                  required
+                  value={editingProject.category || ''}
+                  onChange={(e) => setEditingProject({ ...editingProject, category: e.target.value })}
+                  placeholder="Ex: Desenvolvimento Web, Mobile, IA & Automação, Sistemas"
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
+                />
+                <datalist id="category-suggestions">
+                  <option value="Desenvolvimento Web" />
+                  <option value="Mobile" />
+                  <option value="IA & Automação" />
+                  <option value="Sistemas" />
+                  <option value="Infraestrutura" />
+                  <option value="Segurança" />
+                  <option value="UI/UX" />
+                </datalist>
               </div>
 
+              {/* 4. Descrição */}
               <div>
-                <label className="text-slate-400">Descrição</label>
+                <label className="text-slate-400 font-mono">// 4. Descrição do Projeto</label>
                 <textarea
                   rows={3}
                   required
-                  value={editingProject.description}
+                  value={editingProject.description || ''}
                   onChange={(e) => setEditingProject({ ...editingProject, description: e.target.value })}
-                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
+                  placeholder="Descreva as principais funcionalidades, valor de negócio e desafios técnicos resolvidos..."
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
                 />
               </div>
 
+              {/* 5. Stack Tecnológica */}
               <div>
-                <label className="text-slate-400">Stack Tecnológica (separada por vírgulas)</label>
+                <label className="text-slate-400 font-mono">// 5. Stack Tecnológica (separada por vírgulas)</label>
                 <input
                   type="text"
-                  value={editingProject.stackInput}
+                  value={editingProject.stackInput || ''}
                   onChange={(e) => setEditingProject({ ...editingProject, stackInput: e.target.value })}
-                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
+                  placeholder="React 19, TypeScript, Node.js, Tailwind CSS, Supabase"
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-400">URL Demo ao Vivo</label>
-                  <input
-                    type="text"
-                    value={editingProject.liveUrl}
-                    onChange={(e) => setEditingProject({ ...editingProject, liveUrl: e.target.value })}
-                    className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
-                  />
-                </div>
-                <div>
-                  <label className="text-slate-400">URL Repositório GitHub</label>
-                  <input
-                    type="text"
-                    value={editingProject.repoUrl}
-                    onChange={(e) => setEditingProject({ ...editingProject, repoUrl: e.target.value })}
-                    className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
-                  />
-                </div>
+              {/* 6. URL da Imagem de Capa (Cover Image + Live Preview) */}
+              <div className="space-y-2">
+                <label className="text-slate-400 font-mono">// 6. URL da Imagem de Capa (Cover Image)</label>
+                <input
+                  type="text"
+                  value={editingProject.previewImage || ''}
+                  onChange={(e) => setEditingProject({ ...editingProject, previewImage: e.target.value })}
+                  placeholder="https://exemplo.com/imagem-capa.jpg"
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
+                />
+                {editingProject.previewImage && (
+                  <div className="relative h-32 w-full rounded-lg overflow-hidden border border-[#9d4edd]/30 bg-[#05030e]">
+                    <img
+                      src={editingProject.previewImage}
+                      alt="Pré-visualização da Capa"
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.onerror = null; e.target.src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop'; }}
+                    />
+                    <span className="absolute bottom-1.5 right-2 text-[10px] bg-[#070510]/85 text-[#c77dff] px-2 py-0.5 rounded border border-[#9d4edd]/30 font-mono">
+                      Pré-visualização da Capa
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* 7. URL Repositório GitHub */}
+              <div>
+                <label className="text-slate-400 font-mono">// 7. URL Repositório GitHub</label>
+                <input
+                  type="text"
+                  value={editingProject.repoUrl || ''}
+                  onChange={(e) => setEditingProject({ ...editingProject, repoUrl: e.target.value })}
+                  placeholder="https://github.com/A-jota07/nome-do-repositorio"
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
+                />
               </div>
             </div>
 
@@ -597,13 +725,13 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={() => setProjectModalOpen(false)}
-                className="px-4 py-2 rounded bg-slate-800 text-slate-300"
+                className="px-4 py-2 rounded bg-[#18103c] text-slate-300 hover:text-white font-mono border border-[#9d4edd]/30 transition-all cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 rounded font-bold bg-[#9d4edd] text-white hover:bg-[#c77dff]"
+                className="px-4 py-2 rounded font-bold font-mono bg-gradient-to-r from-[#9d4edd] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-lg shadow-[#9d4edd]/30 transition-all cursor-pointer"
               >
                 Salvar Projeto
               </button>

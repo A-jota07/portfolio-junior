@@ -60,7 +60,7 @@ const resumoCarreira = {
         </div>
 
         {/* Quick Highlights / Stats Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6">
+        <div className="grid grid-cols-2 gap-2.5 mb-6">
           <div className="p-2.5 rounded-lg bg-[#0e0a22]/80 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 transition-colors">
             <div className="text-[10px] text-slate-400 font-mono">// experiência</div>
             <div className="text-base sm:text-lg font-bold text-white font-mono">{PERSONAL_INFO.stats.experienceYears}</div>
@@ -68,14 +68,6 @@ const resumoCarreira = {
           <div className="p-2.5 rounded-lg bg-[#0e0a22]/80 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 transition-colors">
             <div className="text-[10px] text-slate-400 font-mono">// repositórios</div>
             <div className="text-base sm:text-lg font-bold text-[#c77dff] font-mono">{PERSONAL_INFO.stats.reposContributed}</div>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[#0e0a22]/80 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 transition-colors">
-            <div className="text-[10px] text-slate-400 font-mono">// commits</div>
-            <div className="text-base sm:text-lg font-bold text-[#f72585] font-mono">{PERSONAL_INFO.stats.totalCommits}</div>
-          </div>
-          <div className="p-2.5 rounded-lg bg-[#0e0a22]/80 border border-[#9d4edd]/20 hover:border-[#9d4edd]/50 transition-colors">
-            <div className="text-[10px] text-slate-400 font-mono">// pontuação</div>
-            <div className="text-base sm:text-lg font-bold text-emerald-400 font-mono">{PERSONAL_INFO.stats.codeQualityScore}</div>
           </div>
         </div>
       </div>

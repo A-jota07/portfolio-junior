@@ -9,7 +9,7 @@ import ProjectModal from './components/ProjectModal';
 import RequireAuth from './components/RequireAuth';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
-import { fetchProjects, fetchSkills, fetchProfileInfo } from './lib/supabaseClient';
+import { fetchProjects, fetchSkills, fetchProfileInfo, subscribeToRealtimeUpdates } from './lib/supabaseClient';
 import { Heart, Mail, CheckCircle2 } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from './components/Icons';
 
@@ -35,6 +35,7 @@ function PublicPortfolio() {
   };
 
   useEffect(() => {
+    document.title = 'Alexandrer Jr // Desenvolvedor Full Stack Jr';
     loadPublicData();
 
     // Listen for custom event whenever data is updated in Admin or Reset
@@ -43,8 +44,13 @@ function PublicPortfolio() {
     };
 
     window.addEventListener('portfolio_data_updated', handleDataUpdate);
+    const unsubscribeRealtime = subscribeToRealtimeUpdates(() => {
+      loadPublicData();
+    });
+
     return () => {
       window.removeEventListener('portfolio_data_updated', handleDataUpdate);
+      unsubscribeRealtime();
     };
   }, []);
 
@@ -54,7 +60,7 @@ function PublicPortfolio() {
   };
 
   const handleHireClick = () => {
-    showToast('🚀 Protocolo de contratação iniciado! E-mail: michael.weaver@dev.tech');
+    showToast('🚀 Protocolo de contratação iniciado! E-mail: alexandrecassiodesouzajunior@gmail.com');
   };
 
   const scrollToSection = (id) => {
@@ -100,6 +106,7 @@ function PublicPortfolio() {
             {/* Right Panel: Showcase Widget (Active Project / Repo Metrics) */}
             <div className="lg:col-span-5 rounded-xl bg-[#090616]/90 border border-[#9d4edd]/20 p-2 shadow-inner">
               <ShowcaseWidget
+                projectsList={projectsList}
                 onSelectProjectModal={(proj) => setSelectedModalProject(proj)}
               />
             </div>
@@ -127,7 +134,7 @@ function PublicPortfolio() {
         <footer className="mt-16 pt-8 pb-12 border-t border-[#9d4edd]/20 text-center space-y-4 text-xs font-mono text-slate-400">
           <div className="flex items-center justify-center gap-4">
             <a
-              href={`https://${profileInfo.github || 'github.com/mweaver-dev'}`}
+              href={`https://${profileInfo.github || 'github.com/A-jota07'}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-[#c77dff] transition-colors"
@@ -137,7 +144,7 @@ function PublicPortfolio() {
             </a>
             <span className="text-slate-700">•</span>
             <a
-              href={`https://${profileInfo.linkedin || 'linkedin.com/in/mweaver-dev'}`}
+              href={`https://${profileInfo.linkedin || 'linkedin.com'}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-[#c77dff] transition-colors"
@@ -147,7 +154,7 @@ function PublicPortfolio() {
             </a>
             <span className="text-slate-700">•</span>
             <a
-              href={`mailto:${profileInfo.email || 'michael.weaver@dev.tech'}`}
+              href={`mailto:${profileInfo.email || 'alexandrecassiodesouzajunior@gmail.com'}`}
               className="flex items-center gap-1 hover:text-[#c77dff] transition-colors"
             >
               <Mail className="w-3.5 h-3.5" />
@@ -162,7 +169,7 @@ function PublicPortfolio() {
           </p>
 
           <p className="text-[11px] text-slate-600">
-            © {new Date().getFullYear()} Michael Weaver. Todos os direitos reservados.
+            © {new Date().getFullYear()} Alexandre Cássio de Souza Junior. Todos os direitos reservados.
           </p>
         </footer>
       </div>

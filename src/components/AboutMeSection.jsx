@@ -89,17 +89,6 @@ export default function AboutMeSection({ skillsList = [], profileInfo = {}, filt
             </p>
           </div>
 
-          {/* Key Strengths Badges */}
-          <div className="pt-2 flex flex-wrap gap-1.5">
-            <span className="px-2.5 py-1 rounded text-xs font-mono bg-[#160d38] text-[#c77dff] border border-[#9d4edd]/30 flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-yellow-400" />
-              React 19 Architecture
-            </span>
-            <span className="px-2.5 py-1 rounded text-xs font-mono bg-[#160d38] text-[#c77dff] border border-[#9d4edd]/30 flex items-center gap-1">
-              <Layers className="w-3 h-3 text-[#f72585]" />
-              Supabase CRUD Mesh
-            </span>
-          </div>
         </div>
 
         {/* Right Column: Tech Stack Grid */}

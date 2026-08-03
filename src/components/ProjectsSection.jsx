@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, ExternalLink, Star, GitFork, Maximize2, Layers } from 'lucide-react';
+import { Maximize2 } from 'lucide-react';
 import { GithubIcon } from './Icons';
 
 export default function ProjectsSection({ projectsList = [], filterQuery = '', onSelectProjectModal }) {
@@ -76,9 +76,6 @@ export default function ProjectsSection({ projectsList = [], filterQuery = '', o
                   <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#f72585] text-white shadow-md">
                     {project.category}
                   </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-[#070510]/80 text-[#c77dff] border border-[#9d4edd]/40">
-                    {project.tag || 'FEATURED'}
-                  </span>
                 </div>
 
                 {/* Inspect Action */}
@@ -117,37 +114,18 @@ export default function ProjectsSection({ projectsList = [], filterQuery = '', o
                   ))}
                 </div>
 
-                {/* Footer Metrics & Actions */}
-                <div className="pt-3 border-t border-[#9d4edd]/15 flex items-center justify-between">
-                  <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
-                    <span className="flex items-center gap-1 text-yellow-400">
-                      <Star className="w-3.5 h-3.5 fill-yellow-400" />
-                      {project.stars || 100}
-                    </span>
-                    <span className="flex items-center gap-1 text-[#c77dff]">
-                      <GitFork className="w-3.5 h-3.5" />
-                      {project.forks || 25}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={project.repoUrl || 'https://github.com/A-jota07'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-[#9d4edd]/20 transition-all"
-                      title="GitHub Repo"
-                    >
-                      <GithubIcon className="w-4 h-4" />
-                    </a>
-                    <button
-                      onClick={() => onSelectProjectModal(project)}
-                      className="flex items-center gap-1 px-3 py-1 rounded text-xs font-mono font-semibold bg-[#9d4edd] text-white hover:bg-[#c77dff] transition-all cursor-pointer"
-                    >
-                      <Play className="w-3 h-3 fill-white" />
-                      <span>DEMO</span>
-                    </button>
-                  </div>
+                {/* Footer Actions */}
+                <div className="pt-3 border-t border-[#9d4edd]/15 flex items-center justify-end">
+                  <a
+                    href={project.repoUrl || 'https://github.com/A-jota07'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-[#9d4edd]/20 transition-all flex items-center gap-1.5 text-xs font-mono"
+                    title="Código Fonte no GitHub"
+                  >
+                    <GithubIcon className="w-4 h-4" />
+                    <span>// Código Fonte</span>
+                  </a>
                 </div>
               </div>
             </div>
