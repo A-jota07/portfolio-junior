@@ -40,42 +40,44 @@ const setStoredItem = (key, data) => {
   }
 };
 
-// Initial seeds for localStorage ONLY if key has never been initialized (is null)
-if (localStorage.getItem(STORAGE_KEYS.PROJECTS) === null) {
-  setStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
-}
+// Initial seeds for localStorage ONLY if Supabase is NOT configured and key has never been initialized (is null)
+if (!isSupabaseConfigured()) {
+  if (localStorage.getItem(STORAGE_KEYS.PROJECTS) === null) {
+    setStoredItem(STORAGE_KEYS.PROJECTS, FEATURED_PROJECTS);
+  }
 
-if (localStorage.getItem(STORAGE_KEYS.SKILLS) === null) {
-  const flattenedSkills = [];
-  SKILL_CATEGORIES.forEach((cat) => {
-    cat.skills.forEach((sk, idx) => {
-      flattenedSkills.push({
-        id: `sk-${cat.name.toLowerCase().replace(/\s+/g, '-')}-${idx}`,
-        category: cat.name,
-        name: sk.name,
-        level: sk.level,
-        experience: sk.experience,
-        tag: sk.tag
+  if (localStorage.getItem(STORAGE_KEYS.SKILLS) === null) {
+    const flattenedSkills = [];
+    SKILL_CATEGORIES.forEach((cat) => {
+      cat.skills.forEach((sk, idx) => {
+        flattenedSkills.push({
+          id: `sk-${cat.name.toLowerCase().replace(/\s+/g, '-')}-${idx}`,
+          category: cat.name,
+          name: sk.name,
+          level: sk.level,
+          experience: sk.experience,
+          tag: sk.tag
+        });
       });
     });
-  });
-  setStoredItem(STORAGE_KEYS.SKILLS, flattenedSkills);
-}
+    setStoredItem(STORAGE_KEYS.SKILLS, flattenedSkills);
+  }
 
-if (localStorage.getItem(STORAGE_KEYS.PROFILE) === null) {
-  setStoredItem(STORAGE_KEYS.PROFILE, {
-    name: PERSONAL_INFO.name,
-    title: PERSONAL_INFO.title,
-    specialization: PERSONAL_INFO.specialization,
-    location: PERSONAL_INFO.location,
-    status: PERSONAL_INFO.status,
-    email: PERSONAL_INFO.contact.email,
-    github: PERSONAL_INFO.contact.github,
-    linkedin: PERSONAL_INFO.contact.linkedin,
-    bioText: "Sou um Desenvolvedor Full Stack apaixonado por aplicações web de alta performance e ecossistemas React.",
-    philosophy: "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões.",
-    availability: "DISPONÍVEL PARA CONTRATAÇÃO"
-  });
+  if (localStorage.getItem(STORAGE_KEYS.PROFILE) === null) {
+    setStoredItem(STORAGE_KEYS.PROFILE, {
+      name: PERSONAL_INFO.name,
+      title: PERSONAL_INFO.title,
+      specialization: PERSONAL_INFO.specialization,
+      location: PERSONAL_INFO.location,
+      status: PERSONAL_INFO.status,
+      email: PERSONAL_INFO.contact.email,
+      github: PERSONAL_INFO.contact.github,
+      linkedin: PERSONAL_INFO.contact.linkedin,
+      bioText: "Sou um Desenvolvedor Full Stack apaixonado por aplicações web de alta performance e ecossistemas React.",
+      philosophy: "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões.",
+      availability: "DISPONÍVEL PARA CONTRATAÇÃO"
+    });
+  }
 }
 
 // Reset data back to initial defaults if explicitly triggered by user
@@ -120,12 +122,12 @@ export const resetToCodeDefaults = () => {
 
 // --- PROJECTS SERVICE ---
 export const fetchProjects = async () => {
-  let dbProjects = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
       if (!error && Array.isArray(data)) {
-        dbProjects = data;
+        localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(data));
+        return data;
       } else if (error) {
         console.warn('Erro ao buscar projetos no Supabase:', error.message);
       }
@@ -134,35 +136,10 @@ export const fetchProjects = async () => {
     }
   }
 
-  const localProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
-
-  if (dbProjects !== null) {
-    const merged = [...dbProjects];
-    localProjects.forEach(lp => {
-      if (!merged.some(dp => dp.id === lp.id)) {
-        merged.push(lp);
-      }
-    });
-    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(merged));
-    return merged;
-  }
-
-  return localProjects;
+  return getStoredItem(STORAGE_KEYS.PROJECTS, []);
 };
 
 export const saveProject = async (projectData) => {
-  const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
-  const existsIdx = currentProjects.findIndex(p => p.id === projectData.id);
-  
-  let updatedProjects;
-  if (existsIdx >= 0) {
-    updatedProjects = [...currentProjects];
-    updatedProjects[existsIdx] = projectData;
-  } else {
-    updatedProjects = [projectData, ...currentProjects];
-  }
-  setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
-
   let supabaseError = null;
   if (isSupabaseConfigured()) {
     try {
@@ -177,15 +154,23 @@ export const saveProject = async (projectData) => {
     }
   }
 
+  const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
+  const existsIdx = currentProjects.findIndex(p => p.id === projectData.id);
+  
+  let updatedProjects;
+  if (existsIdx >= 0) {
+    updatedProjects = [...currentProjects];
+    updatedProjects[existsIdx] = projectData;
+  } else {
+    updatedProjects = [projectData, ...currentProjects];
+  }
+  setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
+
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
   return { success: true, data: projectData, error: supabaseError };
 };
 
 export const deleteProject = async (id) => {
-  const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
-  const updatedProjects = currentProjects.filter(p => p.id !== id);
-  setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
-
   if (isSupabaseConfigured()) {
     try {
       const { error } = await supabase.from('projects').delete().eq('id', id);
@@ -197,18 +182,22 @@ export const deleteProject = async (id) => {
     }
   }
 
+  const currentProjects = getStoredItem(STORAGE_KEYS.PROJECTS, []);
+  const updatedProjects = currentProjects.filter(p => p.id !== id);
+  setStoredItem(STORAGE_KEYS.PROJECTS, updatedProjects);
+
   window.dispatchEvent(new CustomEvent('portfolio_data_updated'));
   return { success: true };
 };
 
 // --- SKILLS SERVICE ---
 export const fetchSkills = async () => {
-  let dbSkills = null;
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase.from('skills').select('*');
       if (!error && Array.isArray(data)) {
-        dbSkills = data;
+        localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(data));
+        return data;
       } else if (error) {
         console.warn('Erro ao buscar habilidades no Supabase:', error.message);
       }
@@ -217,20 +206,7 @@ export const fetchSkills = async () => {
     }
   }
 
-  const localSkills = getStoredItem(STORAGE_KEYS.SKILLS, []);
-
-  if (dbSkills !== null) {
-    const merged = [...dbSkills];
-    localSkills.forEach(ls => {
-      if (!merged.some(ds => ds.id === ls.id)) {
-        merged.push(ls);
-      }
-    });
-    localStorage.setItem(STORAGE_KEYS.SKILLS, JSON.stringify(merged));
-    return merged;
-  }
-
-  return localSkills;
+  return getStoredItem(STORAGE_KEYS.SKILLS, []);
 };
 
 export const saveSkill = async (skillData) => {
