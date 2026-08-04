@@ -11,8 +11,8 @@ export const PERSONAL_INFO = {
     twitter: "https://x.com/A_Junior15"
   },
   stats: {
-    experienceYears: "3+ Anos",
-    reposContributed: "15+",
+    experienceYears: "3 Anos",
+    reposContributed: "20+",
   }
 };
 
@@ -29,6 +29,15 @@ export const CODE_SNIPPETS = {
   stack: ["React 19", "TypeScript", "Node.js", "Python", "Tailwind CSS"],
   mentalidade: "Performance em primeiro lugar, design impecável, código robusto",
   disponivelParaContratacao: true
+};`,
+
+  resumoCarreira: `// Resumo de Experiência & Principais Conquistas
+const resumoCarreira = {
+  cargoAtual: "Desenvolvedor Full Stack Junior",
+  experiencia: "3 Anos",
+  dominiosChave: ["Aplicações Web", "Sistemas Distribuídos", "Design System"],
+  openSource: "20+ projetos desenvolvidos",
+  disponibilidade: "Disponível para Projetos"
 };`
 };
 

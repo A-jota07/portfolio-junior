@@ -14,14 +14,7 @@ export default function HeroSection({ onExploreClick, onContactClick }) {
       case 'config':
         return CODE_SNIPPETS.developerConfig;
       case 'experience':
-        return `// Resumo de Experiência & Principais Conquistas
-const resumoCarreira = {
-  cargoAtual: "Arquiteto Full Stack & IA Senior @ TechCorp",
-  experiencia: "${PERSONAL_INFO.stats.experienceYears}",
-  dominiosChave: ["Agentes de IA & RAG", "Sistemas Distribuídos", "React & Ferramentas Web"],
-  openSource: "${PERSONAL_INFO.stats.reposContributed} repositórios no GitHub",
-  disponibilidade: "${PERSONAL_INFO.status}"
-};`;
+        return CODE_SNIPPETS.resumoCarreira;
       default:
         return CODE_SNIPPETS.contactInfo;
     }

@@ -81,11 +81,29 @@ export default function AboutMeSection({ skillsList = [], profileInfo = {}, filt
             </p>
 
             <p>
-              {profileInfo.bioText || "I am a passionate Senior Full Stack Developer specializing in high-performance web applications, modern React ecosystems, and AI-driven interactive software."}
+              {profileInfo.bioText || "Desenvolvedor Full Stack Junior focado em construir aplicações web modernas, escaláveis e com design impecável."}
             </p>
 
+            {/* Key Domains Badges */}
+            <div className="pt-2 border-t border-[#9d4edd]/15 space-y-1.5">
+              <div className="text-[11px] font-mono text-slate-400 font-semibold">// Domínios Chave:</div>
+              <div className="flex flex-wrap gap-1.5">
+                {["Aplicações Web", "Sistemas Distribuídos", "Design System"].map((domain, i) => (
+                  <span key={i} className="px-2 py-0.5 rounded text-[11px] font-mono bg-[#9d4edd]/20 text-[#c77dff] border border-[#9d4edd]/30">
+                    {domain}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Open Source Highlight */}
+            <div className="flex items-center justify-between text-xs font-mono pt-1 text-slate-300">
+              <span className="text-slate-400">// Open Source:</span>
+              <span className="font-semibold text-[#f72585]">20+ projetos desenvolvidos</span>
+            </div>
+
             <p className="pt-2 text-slate-400 text-xs border-t border-[#9d4edd]/15">
-              <span className="text-[#9d4edd] font-bold">// Philosophy:</span> "{profileInfo.philosophy || "Write robust, self-documenting code. Build interfaces that inspire curiosity and deliver speed."}"
+              <span className="text-[#9d4edd] font-bold">// Filosofia:</span> "{profileInfo.philosophy || "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões."}"
             </p>
           </div>
 
