@@ -118,36 +118,62 @@ export const FEATURED_PROJECTS = [
 
 export const SKILL_CATEGORIES = [
   {
-    name: "Linguagens & Core",
+    name: "Linguagens de Programação",
     icon: "Code2",
     skills: [
-      { name: "TypeScript / JavaScript", level: 96, experience: "6 anos", tag: "Principal" },
-      { name: "Python", level: 90, experience: "5 anos", tag: "IA/ML" },
-      { name: "HTML5 / CSS3 / SCSS", level: 98, experience: "7 anos", tag: "Especialista" },
-      { name: "SQL & NoSQL", level: 88, experience: "5 anos", tag: "Dados" },
-      { name: "Rust", level: 75, experience: "2 anos", tag: "Sistemas" }
+      { name: "TypeScript", level: 96, experience: "4 anos", tag: "Mestre" },
+      { name: "JavaScript (ES6+)", level: 95, experience: "5 anos", tag: "Especialista" },
+      { name: "Python", level: 88, experience: "3 anos", tag: "Avançado" },
+      { name: "HTML5 / CSS3 / SCSS", level: 98, experience: "5 anos", tag: "Mestre" },
+      { name: "SQL", level: 85, experience: "3 anos", tag: "Pleno" },
+      { name: "Rust", level: 60, experience: "1 ano", tag: "Iniciante" }
     ]
   },
   {
-    name: "Frontend & UI",
+    name: "Frontend & Web UI",
     icon: "Layout",
     skills: [
-      { name: "React 19 / Next.js", level: 98, experience: "6 anos", tag: "Mestre" },
-      { name: "Tailwind CSS v4", level: 95, experience: "4 anos", tag: "Design" },
-      { name: "Redux Toolkit / Zustand", level: 92, experience: "5 anos", tag: "Estado" },
-      { name: "Vite / Webpack", level: 90, experience: "5 anos", tag: "Bundling" },
-      { name: "Three.js / Canvas", level: 80, experience: "3 anos", tag: "Gráficos" }
+      { name: "React 19 / Next.js", level: 96, experience: "4 anos", tag: "Mestre" },
+      { name: "Tailwind CSS v4", level: 95, experience: "3 anos", tag: "Especialista" },
+      { name: "State (Redux / Zustand)", level: 88, experience: "3 anos", tag: "Avançado" },
+      { name: "Vite / Tooling", level: 85, experience: "3 anos", tag: "Pleno" },
+      { name: "Three.js / Canvas 3D", level: 65, experience: "1 ano", tag: "Aprendiz" }
     ]
   },
   {
-    name: "Backend & Cloud",
+    name: "Backend & APIs",
     icon: "Server",
     skills: [
-      { name: "Node.js / Express / NestJS", level: 94, experience: "6 anos", tag: "Backend" },
-      { name: "FastAPI / PyTorch", level: 86, experience: "3 anos", tag: "Serviços IA" },
-      { name: "PostgreSQL / Redis / MongoDB", level: 90, experience: "5 anos", tag: "Bancos de Dados" },
-      { name: "Docker / Kubernetes / AWS", level: 84, experience: "4 anos", tag: "DevOps" },
-      { name: "GraphQL & REST APIs", level: 95, experience: "6 anos", tag: "Arquitetura" }
+      { name: "Node.js / Express / NestJS", level: 92, experience: "4 anos", tag: "Especialista" },
+      { name: "RESTful APIs & GraphQL", level: 94, experience: "4 anos", tag: "Arquiteto" },
+      { name: "FastAPI (Python)", level: 85, experience: "2 anos", tag: "Avançado" },
+      { name: "Autenticação & OAuth2 / JWT", level: 90, experience: "3 anos", tag: "Sênior" }
+    ]
+  },
+  {
+    name: "Cloud, DevOps & Infra",
+    icon: "Cpu",
+    skills: [
+      { name: "Docker & Containerização", level: 82, experience: "2 anos", tag: "Pleno" },
+      { name: "Vercel / AWS Cloud Services", level: 85, experience: "3 anos", tag: "Avançado" },
+      { name: "CI/CD (GitHub Actions)", level: 78, experience: "2 anos", tag: "Intermediário" }
+    ]
+  },
+  {
+    name: "Bancos de Dados & Storage",
+    icon: "Database",
+    skills: [
+      { name: "PostgreSQL & Supabase", level: 92, experience: "3 anos", tag: "Especialista" },
+      { name: "MongoDB & NoSQL", level: 84, experience: "3 anos", tag: "Pleno" },
+      { name: "Redis / Caching", level: 80, experience: "2 anos", tag: "Intermediário" }
+    ]
+  },
+  {
+    name: "IA & Data Science",
+    icon: "Sparkles",
+    skills: [
+      { name: "Engenharia de Prompt & LLMs", level: 90, experience: "2 anos", tag: "Avançado" },
+      { name: "PyTorch & Scikit-Learn", level: 55, experience: "1 ano", tag: "Básico" }
     ]
   }
 ];

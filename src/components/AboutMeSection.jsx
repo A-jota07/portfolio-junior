@@ -2,11 +2,26 @@ import React, { useState } from 'react';
 import { Code2, Layout, Server, Cpu, Sparkles, Terminal, Layers, Star } from 'lucide-react';
 
 export default function AboutMeSection({ skillsList = [], profileInfo = {}, filterQuery = '' }) {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('Todas');
 
-  // Categorize skills list
-  const categoryNames = ['Languages & Core', 'Frontend & UI', 'Backend & Cloud'];
+  // Categorias padrão
+  const defaultCategories = [
+    'Linguagens de Programação',
+    'Frontend & Web UI',
+    'Backend & APIs',
+    'Cloud, DevOps & Infra',
+    'Bancos de Dados & Storage',
+    'IA & Data Science'
+  ];
+
+  // Extrair categorias presentes na lista de habilidades dinamicamente
+  const presentCategories = Array.from(new Set(skillsList.map(skill => skill.category).filter(Boolean)));
   
+  // Lista final de nomes de categorias
+  const categoryNames = presentCategories.length > 0
+    ? Array.from(new Set([...defaultCategories.filter(c => presentCategories.includes(c)), ...presentCategories]))
+    : defaultCategories;
+
   const skillCategories = categoryNames.map(catName => {
     const matchingSkills = skillsList.filter(skill => {
       const isCatMatch = skill.category === catName;
@@ -14,7 +29,7 @@ export default function AboutMeSection({ skillsList = [], profileInfo = {}, filt
         skill.name.toLowerCase().includes(filterQuery.toLowerCase()) ||
         (skill.tag && skill.tag.toLowerCase().includes(filterQuery.toLowerCase()));
 
-      const isCategoryFilterMatch = selectedCategory === 'All' || selectedCategory === catName;
+      const isCategoryFilterMatch = selectedCategory === 'Todas' || selectedCategory === 'All' || selectedCategory === catName;
 
       return isCatMatch && isSearchMatch && isCategoryFilterMatch;
     });
@@ -24,6 +39,26 @@ export default function AboutMeSection({ skillsList = [], profileInfo = {}, filt
       skills: matchingSkills
     };
   }).filter(cat => cat.skills.length > 0);
+
+  const getTagBadgeStyle = (tag = '') => {
+    const t = tag.toLowerCase();
+    if (t.includes('mestre') || t.includes('arquiteto') || t.includes('lead')) {
+      return 'bg-purple-950/80 text-fuchsia-300 border-fuchsia-500/40 font-bold';
+    }
+    if (t.includes('especialista') || t.includes('sênior') || t.includes('senior')) {
+      return 'bg-pink-950/80 text-pink-300 border-pink-500/40 font-bold';
+    }
+    if (t.includes('avançado') || t.includes('avancado') || t.includes('pleno')) {
+      return 'bg-indigo-950/80 text-indigo-300 border-indigo-500/40';
+    }
+    if (t.includes('intermediário') || t.includes('intermediario') || t.includes('praticante')) {
+      return 'bg-blue-950/80 text-blue-300 border-blue-500/40';
+    }
+    if (t.includes('básico') || t.includes('basico') || t.includes('aprendiz') || t.includes('iniciante')) {
+      return 'bg-slate-900 text-cyan-300 border-cyan-500/30';
+    }
+    return 'bg-[#9d4edd]/20 text-[#c77dff] border-[#9d4edd]/30';
+  };
 
   return (
     <section id="about-me" className="py-8 border-t border-[#9d4edd]/20 space-y-8">
@@ -41,12 +76,12 @@ export default function AboutMeSection({ skillsList = [], profileInfo = {}, filt
 
         {/* Category Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
-          {['All', 'Languages & Core', 'Frontend & UI', 'Backend & Cloud'].map((cat) => (
+          {['Todas', ...categoryNames].map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={`px-3 py-1 rounded text-xs font-mono whitespace-nowrap transition-all cursor-pointer ${
-                selectedCategory === cat
+                selectedCategory === cat || (selectedCategory === 'All' && cat === 'Todas')
                   ? 'bg-[#9d4edd] text-white font-bold shadow-md shadow-[#9d4edd]/30'
                   : 'bg-[#0e0a22] text-slate-400 hover:text-slate-200 border border-[#9d4edd]/20'
               }`}
@@ -113,7 +148,7 @@ export default function AboutMeSection({ skillsList = [], profileInfo = {}, filt
         <div className="lg:col-span-7 space-y-4">
           {skillCategories.length === 0 ? (
             <div className="p-8 rounded-xl bg-[#0e0a22]/60 border border-[#9d4edd]/20 text-center text-slate-400 font-mono text-xs">
-              // No skills match query: "{filterQuery}".
+              // Nenhum conhecimento encontrado para o filtro: "{filterQuery}".
             </div>
           ) : (
             skillCategories.map((category) => (
@@ -154,7 +189,9 @@ export default function AboutMeSection({ skillsList = [], profileInfo = {}, filt
                       </div>
 
                       <div className="flex items-center justify-between text-[10px] font-mono text-slate-500 pt-0.5">
-                        <span>tag: {skill.tag || 'Expert'}</span>
+                        <span className={`px-1.5 py-0.5 rounded border ${getTagBadgeStyle(skill.tag)}`}>
+                          tag: {skill.tag || 'Especialista'}
+                        </span>
                         <span className="text-[#c77dff] font-bold">{skill.level}%</span>
                       </div>
                     </div>

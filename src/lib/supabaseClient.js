@@ -16,10 +16,10 @@ export const isSupabaseConfigured = () => {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const STORAGE_KEYS = {
-  PROJECTS: 'portfolio_projects_v5',
-  SKILLS: 'portfolio_skills_v5',
-  PROFILE: 'portfolio_profile_v5',
-  AUTH_SESSION: 'portfolio_admin_session_v5'
+  PROJECTS: 'portfolio_projects_v6',
+  SKILLS: 'portfolio_skills_v6',
+  PROFILE: 'portfolio_profile_v6',
+  AUTH_SESSION: 'portfolio_admin_session_v6'
 };
 
 const getStoredItem = (key, fallback) => {

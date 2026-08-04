@@ -196,11 +196,11 @@ export default function AdminDashboard() {
     } else {
       setEditingSkill({
         id: `sk-${Date.now()}`,
-        category: 'Frontend & UI',
+        category: 'Frontend & Web UI',
         name: '',
-        level: 90,
-        experience: '4 anos',
-        tag: 'Especialista'
+        level: 85,
+        experience: '3 anos',
+        tag: 'Pleno'
       });
     }
     setSkillModalOpen(true);
@@ -814,42 +814,54 @@ export default function AdminDashboard() {
       {/* SKILL FORM MODAL */}
       {skillModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070510]/80 backdrop-blur-md">
-          <form onSubmit={handleSaveSkillForm} className="relative w-full max-w-md rounded-xl bg-[#0c091d] border border-[#9d4edd]/50 p-6 space-y-4 font-mono text-xs shadow-2xl">
+          <form onSubmit={handleSaveSkillForm} className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl bg-[#0c091d] border border-[#9d4edd]/50 p-6 space-y-4 font-mono text-xs shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#9d4edd]/20 pb-3">
               <h3 className="text-sm font-bold text-white">// Especificação do Editor de Habilidades</h3>
-              <button type="button" onClick={() => setSkillModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button type="button" onClick={() => setSkillModalOpen(false)} className="text-slate-400 hover:text-white cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="text-slate-400">Nome da Habilidade</label>
+                <label className="text-slate-400 font-mono">// Nome da Habilidade / Tecnologia</label>
                 <input
                   type="text"
                   required
                   value={editingSkill.name}
                   onChange={(e) => setEditingSkill({ ...editingSkill, name: e.target.value })}
-                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
+                  placeholder="Ex: TypeScript, React 19, Docker, PostgreSQL"
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
                 />
               </div>
 
               <div>
-                <label className="text-slate-400">Categoria</label>
-                <select
+                <label htmlFor="skill_category_input" className="text-slate-400 font-mono">// Categoria (Selecione ou digite)</label>
+                <input
+                  type="text"
+                  list="skill-category-list"
+                  name="skill_category_input"
+                  id="skill_category_input"
+                  required
                   value={editingSkill.category}
                   onChange={(e) => setEditingSkill({ ...editingSkill, category: e.target.value })}
-                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
-                >
-                  <option>Linguagens & Core</option>
-                  <option>Frontend & UI</option>
-                  <option>Backend & Cloud</option>
-                </select>
+                  placeholder="Selecione ou digite uma categoria..."
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
+                />
+                <datalist id="skill-category-list">
+                  <option value="Linguagens de Programação" />
+                  <option value="Frontend & Web UI" />
+                  <option value="Backend & APIs" />
+                  <option value="Cloud, DevOps & Infra" />
+                  <option value="Bancos de Dados & Storage" />
+                  <option value="IA & Data Science" />
+                  <option value="Ferramentas & Outros" />
+                </datalist>
               </div>
 
               <div>
                 <div className="flex justify-between">
-                  <label className="text-slate-400">Nível de Proficiência (%)</label>
+                  <label className="text-slate-400 font-mono">// Nível de Proficiência (%)</label>
                   <span className="text-[#c77dff] font-bold">{editingSkill.level}%</span>
                 </div>
                 <input
@@ -858,29 +870,75 @@ export default function AdminDashboard() {
                   max="100"
                   value={editingSkill.level}
                   onChange={(e) => setEditingSkill({ ...editingSkill, level: parseInt(e.target.value) })}
-                  className="w-full accent-[#9d4edd]"
+                  className="w-full accent-[#9d4edd] cursor-pointer"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-slate-400">Experiência (ex: 5 anos)</label>
-                  <input
-                    type="text"
-                    value={editingSkill.experience}
-                    onChange={(e) => setEditingSkill({ ...editingSkill, experience: e.target.value })}
-                    className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
-                  />
+              <div className="space-y-1.5">
+                <label className="text-slate-400 font-mono">// Nível / Tag da Habilidade (Selecione ou digite)</label>
+                <input
+                  type="text"
+                  list="skill-tag-list"
+                  value={editingSkill.tag}
+                  onChange={(e) => setEditingSkill({ ...editingSkill, tag: e.target.value })}
+                  placeholder="Ex: Iniciante, Pleno, Especialista, Mestre..."
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
+                />
+                <datalist id="skill-tag-list">
+                  <option value="Iniciante" />
+                  <option value="Aprendiz" />
+                  <option value="Básico" />
+                  <option value="Intermediário" />
+                  <option value="Pleno" />
+                  <option value="Avançado" />
+                  <option value="Sênior" />
+                  <option value="Especialista" />
+                  <option value="Mestre" />
+                  <option value="Arquiteto" />
+                </datalist>
+
+                {/* Seleção Rápida de Tags por Nível (Básico -> Mestre) */}
+                <div className="pt-1">
+                  <span className="text-[10px] text-slate-500 font-mono block mb-1">Seletor Rápido de Níveis:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {[
+                      'Iniciante',
+                      'Aprendiz',
+                      'Básico',
+                      'Intermediário',
+                      'Pleno',
+                      'Avançado',
+                      'Sênior',
+                      'Especialista',
+                      'Mestre',
+                      'Arquiteto'
+                    ].map((tagName) => (
+                      <button
+                        key={tagName}
+                        type="button"
+                        onClick={() => setEditingSkill({ ...editingSkill, tag: tagName })}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono border transition-all cursor-pointer ${
+                          editingSkill.tag === tagName
+                            ? 'bg-[#9d4edd] text-white border-[#c77dff] font-bold shadow'
+                            : 'bg-[#0e0a22] text-slate-400 hover:text-slate-200 border-[#9d4edd]/20'
+                        }`}
+                      >
+                        {tagName}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <div>
-                  <label className="text-slate-400">Tag (ex: Especialista, Mestre)</label>
-                  <input
-                    type="text"
-                    value={editingSkill.tag}
-                    onChange={(e) => setEditingSkill({ ...editingSkill, tag: e.target.value })}
-                    className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white"
-                  />
-                </div>
+              </div>
+
+              <div>
+                <label className="text-slate-400 font-mono">// Anos de Experiência</label>
+                <input
+                  type="text"
+                  value={editingSkill.experience}
+                  onChange={(e) => setEditingSkill({ ...editingSkill, experience: e.target.value })}
+                  placeholder="Ex: 3 anos, 6 meses, 5+ anos"
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
+                />
               </div>
             </div>
 
@@ -888,13 +946,13 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={() => setSkillModalOpen(false)}
-                className="px-4 py-2 rounded bg-slate-800 text-slate-300"
+                className="px-4 py-2 rounded bg-[#18103c] text-slate-300 hover:text-white font-mono border border-[#9d4edd]/30 transition-all cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 rounded font-bold bg-[#9d4edd] text-white hover:bg-[#c77dff]"
+                className="px-4 py-2 rounded font-bold font-mono bg-gradient-to-r from-[#9d4edd] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-lg shadow-[#9d4edd]/30 transition-all cursor-pointer"
               >
                 Salvar Habilidade
               </button>
