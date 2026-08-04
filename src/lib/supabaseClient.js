@@ -200,9 +200,9 @@ const normalizeProfileFromDb = (prof) => {
 
 const normalizeProfileToDb = (prof) => {
   return {
-    name: prof.name || 'Alexandre Jr',
-    role: prof.title || prof.specialization || 'Desenvolvedor Full Stack Jr',
-    location: prof.location || 'São Paulo, SP',
+    name: prof.name || 'Alexandre Cássio de Souza Junior',
+    role: prof.title || prof.specialization || 'Engenheiro Full Stack Junior',
+    location: prof.location || 'Rondonópolis, MT (Disponível Remoto)',
     available_for_hire: prof.availability ? !prof.availability.includes('INDISPONÍVEL') : true,
     bio_text: prof.bioText || '',
     philosophy: prof.philosophy || ''

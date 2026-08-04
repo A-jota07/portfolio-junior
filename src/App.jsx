@@ -35,7 +35,7 @@ function PublicPortfolio() {
   };
 
   useEffect(() => {
-    document.title = 'Alexandrer Jr // Desenvolvedor Full Stack Jr';
+    document.title = 'Alexandre Cássio de Souza Junior // Engenheiro Full Stack Junior';
     loadPublicData();
 
     // Listen for custom event whenever data is updated in Admin or Reset

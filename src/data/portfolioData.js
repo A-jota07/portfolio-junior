@@ -1,8 +1,8 @@
 export const PERSONAL_INFO = {
-  name: "ALEXANDRE JUNIOR",
+  name: "ALEXANDRE CÁSSIO DE SOUZA JUNIOR",
   title: "Engenheiro Full Stack Junior",
   specialization: "Dev Full Stack",
-  location: "São Paulo, SP (Disponível Remoto)",
+  location: "Rondonópolis, MT (Disponível Remoto)",
   status: "Disponível para Projetos",
   contact: {
     email: "alexandrecassiodesouzajunior@gmail.com",
@@ -18,7 +18,7 @@ export const PERSONAL_INFO = {
 
 export const CODE_SNIPPETS = {
   contactInfo: `const informacoesContato = {
-  nome: "Alexandre Junior",
+  nome: "Alexandre Cássio de Souza Junior",
   email: "alexandrecassiodesouzajunior@gmail.com",
   github: "https://github.com/A-jota07",
   linkedin: "https://www.linkedin.com/in/alexandre-c-souza-jr/",
@@ -33,7 +33,7 @@ export const CODE_SNIPPETS = {
 
   resumoCarreira: `// Resumo de Experiência & Principais Conquistas
 const resumoCarreira = {
-  cargoAtual: "Desenvolvedor Full Stack Junior",
+  cargoAtual: "Engenheiro Full Stack Junior",
   experiencia: "3 Anos",
   dominiosChave: ["Aplicações Web", "Sistemas Distribuídos", "Design System"],
   openSource: "20+ projetos desenvolvidos",
