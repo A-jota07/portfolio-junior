@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Terminal, Sparkles, Check, Copy } from 'lucide-react';
+import { Search, Sparkles, Check, Copy } from 'lucide-react';
 
 export default function Navbar({ activeSection, setActiveSection, filterQuery, setFilterQuery, onHireClick }) {
   const [copied, setCopied] = useState(false);
@@ -29,16 +29,6 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
             <span className="w-3 h-3 rounded-full bg-red-500/80 inline-block shadow-sm shadow-red-500/50 hover:opacity-100 cursor-pointer"></span>
             <span className="w-3 h-3 rounded-full bg-yellow-500/80 inline-block shadow-sm shadow-yellow-500/50 hover:opacity-100 cursor-pointer"></span>
             <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block shadow-sm shadow-emerald-500/50 hover:opacity-100 cursor-pointer"></span>
-          </div>
-
-          <div className="h-3 w-[1px] bg-slate-800 mx-1 hidden sm:block"></div>
-
-          {/* Current File Path Breadcrumb */}
-          <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-mono text-slate-400">
-            <Terminal className="w-3.5 h-3.5 text-[#c77dff]" />
-            <span className="text-slate-500">portfolio-junior</span>
-            <span className="text-slate-600">/</span>
-            <span className="text-[#c77dff] font-medium">src/{activeSection}.config.tsx</span>
           </div>
         </div>
 
