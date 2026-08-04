@@ -16,10 +16,10 @@ export const isSupabaseConfigured = () => {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const STORAGE_KEYS = {
-  PROJECTS: 'portfolio_projects_v4',
-  SKILLS: 'portfolio_skills_v4',
-  PROFILE: 'portfolio_profile_v4',
-  AUTH_SESSION: 'portfolio_admin_session_v4'
+  PROJECTS: 'portfolio_projects_v5',
+  SKILLS: 'portfolio_skills_v5',
+  PROFILE: 'portfolio_profile_v5',
+  AUTH_SESSION: 'portfolio_admin_session_v5'
 };
 
 const getStoredItem = (key, fallback) => {
@@ -183,11 +183,15 @@ const normalizeSkillToDb = (s) => {
 };
 
 const normalizeProfileFromDb = (prof) => {
+  const isOldLocation = !prof.location || prof.location.includes('São Paulo');
+  const isOldName = !prof.name || prof.name === 'MICHAEL WEAVER' || prof.name === 'Alexandre Jr';
+  const isOldTitle = (!prof.title && !prof.role) || (prof.title && prof.title.includes('Senior'));
+
   return {
-    name: prof.name || PERSONAL_INFO.name,
-    title: prof.role || prof.title || PERSONAL_INFO.title,
-    specialization: prof.role || PERSONAL_INFO.specialization,
-    location: prof.location || PERSONAL_INFO.location,
+    name: isOldName ? PERSONAL_INFO.name : prof.name,
+    title: isOldTitle ? PERSONAL_INFO.title : (prof.role || prof.title),
+    specialization: isOldTitle ? PERSONAL_INFO.specialization : (prof.role || PERSONAL_INFO.specialization),
+    location: isOldLocation ? PERSONAL_INFO.location : prof.location,
     status: prof.available_for_hire ? 'Disponível para Projetos' : 'Ocupado',
     email: prof.email || PERSONAL_INFO.contact.email,
     github: prof.github || PERSONAL_INFO.contact.github,

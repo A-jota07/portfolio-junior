@@ -107,16 +107,24 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.profile_info (id, name, title, specialization, location, status, email, github, linkedin, "bioText", philosophy, availability)
 VALUES (
   'main-profile',
-  'MICHAEL WEAVER',
-  'Engenheiro Full Stack Senior & IA',
-  'Dev Full Stack | IA & Tecnologia',
-  'São Paulo, SP (Disponível Remoto)',
-  'Disponível para Projetos de Alto Impacto & Consultoria',
-  'michael.weaver@dev.tech',
-  'github.com/mweaver-dev',
-  'linkedin.com/in/mweaver-dev',
-  'Sou um Desenvolvedor Full Stack Senior apaixonado por aplicações web de alta performance, ecossistemas React modernos e software interativo orientado a IA.',
+  'ALEXANDRE CÁSSIO DE SOUZA JUNIOR',
+  'Engenheiro Full Stack Junior',
+  'Dev Full Stack',
+  'Rondonópolis, MT (Disponível Remoto)',
+  'Disponível para Projetos',
+  'alexandrecassiodesouzajunior@gmail.com',
+  'https://github.com/A-jota07',
+  'https://www.linkedin.com/in/alexandre-c-souza-jr/',
+  'Sou um Desenvolvedor Full Stack apaixonado por aplicações web de alta performance e ecossistemas React.',
   'Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões.',
   'DISPONÍVEL PARA CONTRATAÇÃO'
 )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  title = EXCLUDED.title,
+  specialization = EXCLUDED.specialization,
+  location = EXCLUDED.location,
+  status = EXCLUDED.status,
+  email = EXCLUDED.email,
+  github = EXCLUDED.github,
+  linkedin = EXCLUDED.linkedin;
