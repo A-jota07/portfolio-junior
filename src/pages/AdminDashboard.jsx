@@ -126,7 +126,9 @@ export default function AdminDashboard() {
     if (proj) {
       setEditingProject({
         ...proj,
-        stackInput: Array.isArray(proj.stack) ? proj.stack.join(', ') : (proj.stack || '')
+        stackInput: Array.isArray(proj.stack) ? proj.stack.join(', ') : (proj.stack || ''),
+        highlightsInput: Array.isArray(proj.highlights) ? proj.highlights.join(', ') : (proj.highlights || ''),
+        architecture_details: proj.architecture_details || proj.architectureDetails || ''
       });
     } else {
       setEditingProject({
@@ -136,6 +138,8 @@ export default function AdminDashboard() {
         description: '',
         category: 'Desenvolvimento Web',
         stackInput: 'React 19, TypeScript, Tailwind CSS',
+        highlightsInput: 'Latência ultrabaixa (<50ms), Cache IndexedDB, Parse SQL Personalizado',
+        architecture_details: 'Frontend: React 19 SPA + Sincronização WebSockets\nBackend: Microsserviços FastAPI / Node.js\nBanco de Dados: PostgreSQL + Cache Redis',
         repoUrl: 'https://github.com/A-jota07',
         previewImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop'
       });
@@ -149,11 +153,18 @@ export default function AdminDashboard() {
       ? editingProject.stackInput.split(',').map(s => s.trim()).filter(Boolean)
       : ['React'];
 
+    const highlightsArray = editingProject.highlightsInput
+      ? editingProject.highlightsInput.split(',').map(h => h.trim()).filter(Boolean)
+      : (Array.isArray(editingProject.highlights) ? editingProject.highlights : []);
+
     const projectToSave = {
       ...editingProject,
-      stack: stackArray
+      stack: stackArray,
+      highlights: highlightsArray,
+      architecture_details: editingProject.architecture_details || ''
     };
     delete projectToSave.stackInput;
+    delete projectToSave.highlightsInput;
 
     const res = await saveProject(projectToSave);
     if (res && res.error) {
@@ -744,9 +755,33 @@ export default function AdminDashboard() {
                 )}
               </div>
 
-              {/* 7. URL Repositório GitHub */}
+              {/* 7. Destaques Técnicos (Highlights) */}
               <div>
-                <label className="text-slate-400 font-mono">// 7. URL Repositório GitHub</label>
+                <label className="text-slate-400 font-mono">// 7. Destaques Técnicos (separados por vírgula)</label>
+                <input
+                  type="text"
+                  value={editingProject.highlightsInput || ''}
+                  onChange={(e) => setEditingProject({ ...editingProject, highlightsInput: e.target.value })}
+                  placeholder="Latência ultrabaixa (<50ms), Cache IndexedDB, Parse SQL Personalizado"
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
+                />
+              </div>
+
+              {/* 8. Detalhes de Arquitetura & Especificações */}
+              <div>
+                <label className="text-slate-400 font-mono">// 8. Detalhes de Arquitetura & Especificações Técnicas</label>
+                <textarea
+                  rows={4}
+                  value={editingProject.architecture_details || ''}
+                  onChange={(e) => setEditingProject({ ...editingProject, architecture_details: e.target.value })}
+                  placeholder={`Frontend: React 19 SPA + Sincronização WebSockets\nBackend: Microsserviços FastAPI / Node.js\nBanco de Dados: PostgreSQL + Cache Redis`}
+                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff] leading-relaxed"
+                />
+              </div>
+
+              {/* 9. URL Repositório GitHub */}
+              <div>
+                <label className="text-slate-400 font-mono">// 9. URL Repositório GitHub</label>
                 <input
                   type="text"
                   value={editingProject.repoUrl || ''}

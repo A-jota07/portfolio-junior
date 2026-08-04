@@ -128,6 +128,12 @@ const isValidUuid = (str) => {
 };
 
 const normalizeProjectFromDb = (p) => {
+  const highlightsArr = Array.isArray(p.highlights) 
+    ? p.highlights 
+    : (typeof p.highlights === 'string' 
+      ? p.highlights.split(',').map(h => h.trim()).filter(Boolean) 
+      : []);
+
   return {
     id: p.id,
     title: p.title || '',
@@ -135,6 +141,8 @@ const normalizeProjectFromDb = (p) => {
     description: p.description || '',
     category: p.category || 'Desenvolvimento Web',
     stack: Array.isArray(p.technologies) ? p.technologies : (Array.isArray(p.stack) ? p.stack : (p.technologies ? [p.technologies] : [])),
+    highlights: highlightsArr,
+    architecture_details: p.architecture_details || p.architectureDetails || '',
     repoUrl: p.github_url || p.repoUrl || 'https://github.com/A-jota07',
     previewImage: p.cover_url || p.preview_image || p.previewImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop',
     created_at: p.created_at
@@ -143,11 +151,15 @@ const normalizeProjectFromDb = (p) => {
 
 const normalizeProjectToDb = (p) => {
   const stackArr = Array.isArray(p.stack) ? p.stack : (typeof p.stack === 'string' ? p.stack.split(',').map(s => s.trim()).filter(Boolean) : []);
+  const highlightsArr = Array.isArray(p.highlights) ? p.highlights : (typeof p.highlights === 'string' ? p.highlights.split(',').map(h => h.trim()).filter(Boolean) : []);
+
   const dbObj = {
     title: p.title || '',
     description: p.description || '',
     category: p.category || 'Desenvolvimento Web',
     technologies: stackArr,
+    highlights: highlightsArr,
+    architecture_details: p.architecture_details || p.architectureDetails || '',
     github_url: p.repoUrl || 'https://github.com/A-jota07',
     cover_url: p.previewImage || p.cover_url || ''
   };

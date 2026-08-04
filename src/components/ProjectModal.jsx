@@ -47,7 +47,7 @@ export default function ProjectModal({ project, onClose }) {
                 <h2 className="text-2xl font-extrabold text-white mt-1">{project.title}</h2>
                 <p className="text-xs text-[#c77dff]">{project.subtitle}</p>
                 <span className="text-[10px] font-mono text-slate-400 block mt-1">
-                  // Desenvolvido por: Alexandre Jr // Desenvolvedor Full Stack Jr
+                  // Desenvolvido por: Alexandre Cássio de Souza Junior // Engenheiro Full Stack Junior
                 </span>
               </div>
             </div>
@@ -107,7 +107,13 @@ export default function ProjectModal({ project, onClose }) {
             <div className="space-y-4">
               <h4 className="text-xs font-bold text-[#c77dff] uppercase mb-1">// Destaques Técnicos</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {(project.highlights || ["Latência ultrabaixa", "Design responsivo", "CI/CD automatizado"]).map((h, i) => (
+                {((Array.isArray(project.highlights) && project.highlights.length > 0)
+                  ? project.highlights 
+                  : (typeof project.highlights === 'string' && project.highlights
+                    ? project.highlights.split(',').map(h => h.trim()).filter(Boolean)
+                    : ["Latência ultrabaixa (<50ms)", "Design responsivo & Acessível", "Sincronização em tempo real"]
+                    )
+                ).map((h, i) => (
                   <div key={i} className="p-3 rounded-lg bg-[#060412] border border-[#9d4edd]/20 flex items-center gap-2 text-xs">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                     <span className="text-slate-200">{h}</span>
@@ -115,11 +121,11 @@ export default function ProjectModal({ project, onClose }) {
                 ))}
               </div>
 
-              <div className="p-4 rounded-lg bg-[#05030e] border border-[#9d4edd]/20 text-xs text-slate-300 space-y-1">
-                <div className="text-[#f72585] font-bold">// Diagrama de Arquitetura</div>
-                <div>Frontend: React 19 SPA + sincronização em tempo real via WebSockets</div>
-                <div>Backend: Malha de microsserviços de alta performance</div>
-                <div>Implantação: Esteira de CI/CD automatizada em rede Edge</div>
+              <div className="p-4 rounded-lg bg-[#05030e] border border-[#9d4edd]/20 text-xs text-slate-300 space-y-1.5">
+                <div className="text-[#f72585] font-bold mb-1">// Diagrama de Arquitetura & Especificações</div>
+                <div className="whitespace-pre-line leading-relaxed text-slate-300">
+                  {project.architecture_details || project.architectureDetails || `Frontend: React 19 SPA + Sincronização em tempo real\nBackend: Arquitetura de microsserviços de alta performance\nImplantação: Esteira de CI/CD automatizada com deploy contínuo`}
+                </div>
               </div>
             </div>
           )}

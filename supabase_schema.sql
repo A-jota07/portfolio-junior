@@ -10,10 +10,16 @@ CREATE TABLE IF NOT EXISTS public.projects (
   description TEXT NOT NULL,
   category TEXT NOT NULL,
   technologies TEXT[] NOT NULL DEFAULT '{}',
+  highlights TEXT[] DEFAULT '{}',
+  architecture_details TEXT,
   github_url TEXT,
   cover_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Garantir adição de colunas em bancos existentes
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS highlights TEXT[] DEFAULT '{}';
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS architecture_details TEXT;
 
 -- 2. TABELA DE HABILIDADES (skills)
 CREATE TABLE IF NOT EXISTS public.skills (
