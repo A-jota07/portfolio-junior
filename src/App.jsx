@@ -9,6 +9,7 @@ import ProjectModal from './components/ProjectModal';
 import RequireAuth from './components/RequireAuth';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
+import NotFoundPage from './pages/NotFoundPage';
 import { fetchProjects, fetchSkills, fetchProfileInfo, subscribeToRealtimeUpdates } from './lib/supabaseClient';
 import { Heart, Mail, CheckCircle2 } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from './components/Icons';
@@ -208,6 +209,7 @@ export default function App() {
             </RequireAuth>
           }
         />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
