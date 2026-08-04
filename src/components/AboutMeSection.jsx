@@ -103,7 +103,7 @@ export default function AboutMeSection({ skillsList = [], profileInfo = {}, filt
             </div>
 
             <p className="pt-2 text-slate-400 text-xs border-t border-[#9d4edd]/15">
-              <span className="text-[#9d4edd] font-bold">// Filosofia:</span> "{profileInfo.philosophy || "Escreva código robusto e auto-documentado. Construa interfaces que inspirem curiosidade e entreguem velocidade sem concessões."}"
+              <span className="text-[#9d4edd] font-bold">// Filosofia:</span> "{profileInfo.philosophy || "Complexidade nos bastidores, simplicidade na tela. Acredito que o bom software é aquele que coloca a experiência do usuário no centro, transformando problemas complexos em interações intuitivas e inclusivas."}"
             </p>
           </div>
 
