@@ -675,34 +675,84 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              {/* 3. Categoria (Input/Select Misto) */}
-              <div>
-                <label htmlFor="project_category" className="text-slate-400 font-mono">// 3. Categoria (Selecione ou digite uma nova)</label>
-                <input
-                  type="text"
-                  list="category-options"
-                  name="project_category"
-                  id="project_category"
-                  autoComplete="off"
-                  data-lpignore="true"
-                  data-form-type="other"
-                  required
-                  value={editingProject.category || ''}
-                  onChange={(e) => setEditingProject({ ...editingProject, category: e.target.value })}
-                  placeholder="Selecione ou digite uma categoria..."
-                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
-                />
-                <datalist id="category-options">
-                  <option value="Desenvolvimento Web" />
-                  <option value="Sistemas & Backend" />
-                  <option value="Mobile" />
-                  <option value="IA & Automação" />
-                  <option value="Data Science & Analytics" />
-                  <option value="APIs & Microserviços" />
-                  <option value="DevOps & Cloud" />
-                  <option value="UI/UX & Frontend" />
-                  <option value="Ferramentas & CLI" />
-                </datalist>
+              {/* 3. Categoria do Projeto */}
+              <div className="space-y-1.5">
+                <label className="text-slate-400 font-mono">// 3. Categoria do Projeto</label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <select
+                    value={
+                      [
+                        'Desenvolvimento Web',
+                        'Sistemas & Backend',
+                        'Mobile',
+                        'IA & Automação',
+                        'Data Science & Analytics',
+                        'APIs & Microserviços',
+                        'DevOps & Cloud',
+                        'UI/UX & Frontend',
+                        'Ferramentas & CLI'
+                      ].includes(editingProject.category)
+                        ? editingProject.category
+                        : 'custom'
+                    }
+                    onChange={(e) => {
+                      if (e.target.value !== 'custom') {
+                        setEditingProject({ ...editingProject, category: e.target.value });
+                      }
+                    }}
+                    className="bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono text-xs focus:outline-none focus:border-[#c77dff]"
+                  >
+                    <option value="Desenvolvimento Web">Desenvolvimento Web</option>
+                    <option value="Sistemas & Backend">Sistemas & Backend</option>
+                    <option value="Mobile">Mobile</option>
+                    <option value="IA & Automação">IA & Automação</option>
+                    <option value="Data Science & Analytics">Data Science & Analytics</option>
+                    <option value="APIs & Microserviços">APIs & Microserviços</option>
+                    <option value="DevOps & Cloud">DevOps & Cloud</option>
+                    <option value="UI/UX & Frontend">UI/UX & Frontend</option>
+                    <option value="Ferramentas & CLI">Ferramentas & CLI</option>
+                    <option value="custom">✏️ Outra Categoria (Personalizada)...</option>
+                  </select>
+
+                  <input
+                    type="text"
+                    required
+                    value={editingProject.category || ''}
+                    onChange={(e) => setEditingProject({ ...editingProject, category: e.target.value })}
+                    placeholder="Digite ou selecione uma categoria..."
+                    className="flex-1 bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono text-xs focus:outline-none focus:border-[#c77dff]"
+                  />
+                </div>
+
+                <div className="pt-1">
+                  <span className="text-[10px] text-slate-500 font-mono block mb-1">Categorias Sugeridas:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {[
+                      'Desenvolvimento Web',
+                      'Sistemas & Backend',
+                      'Mobile',
+                      'IA & Automação',
+                      'Data Science & Analytics',
+                      'APIs & Microserviços',
+                      'DevOps & Cloud',
+                      'UI/UX & Frontend',
+                      'Ferramentas & CLI'
+                    ].map((catName) => (
+                      <button
+                        key={catName}
+                        type="button"
+                        onClick={() => setEditingProject({ ...editingProject, category: catName })}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono border transition-all cursor-pointer ${
+                          editingProject.category === catName
+                            ? 'bg-[#9d4edd] text-white border-[#c77dff] font-bold shadow'
+                            : 'bg-[#0e0a22] text-slate-400 hover:text-slate-200 border-[#9d4edd]/20'
+                        }`}
+                      >
+                        {catName}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* 4. Descrição */}
@@ -835,28 +885,78 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              <div>
-                <label htmlFor="skill_category_input" className="text-slate-400 font-mono">// Categoria (Selecione ou digite)</label>
-                <input
-                  type="text"
-                  list="skill-category-list"
-                  name="skill_category_input"
-                  id="skill_category_input"
-                  required
-                  value={editingSkill.category}
-                  onChange={(e) => setEditingSkill({ ...editingSkill, category: e.target.value })}
-                  placeholder="Selecione ou digite uma categoria..."
-                  className="w-full bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono focus:outline-none focus:border-[#c77dff]"
-                />
-                <datalist id="skill-category-list">
-                  <option value="Linguagens de Programação" />
-                  <option value="Frontend & Web UI" />
-                  <option value="Backend & APIs" />
-                  <option value="Cloud, DevOps & Infra" />
-                  <option value="Bancos de Dados & Storage" />
-                  <option value="IA & Data Science" />
-                  <option value="Ferramentas & Outros" />
-                </datalist>
+              {/* Categoria da Habilidade */}
+              <div className="space-y-1.5">
+                <label className="text-slate-400 font-mono">// Categoria da Habilidade</label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <select
+                    value={
+                      [
+                        'Linguagens de Programação',
+                        'Frontend & Web UI',
+                        'Backend & APIs',
+                        'Cloud, DevOps & Infra',
+                        'Bancos de Dados & Storage',
+                        'IA & Data Science',
+                        'Ferramentas & Outros'
+                      ].includes(editingSkill.category)
+                        ? editingSkill.category
+                        : 'custom'
+                    }
+                    onChange={(e) => {
+                      if (e.target.value !== 'custom') {
+                        setEditingSkill({ ...editingSkill, category: e.target.value });
+                      }
+                    }}
+                    className="bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono text-xs focus:outline-none focus:border-[#c77dff]"
+                  >
+                    <option value="Linguagens de Programação">Linguagens de Programação</option>
+                    <option value="Frontend & Web UI">Frontend & Web UI</option>
+                    <option value="Backend & APIs">Backend & APIs</option>
+                    <option value="Cloud, DevOps & Infra">Cloud, DevOps & Infra</option>
+                    <option value="Bancos de Dados & Storage">Bancos de Dados & Storage</option>
+                    <option value="IA & Data Science">IA & Data Science</option>
+                    <option value="Ferramentas & Outros">Ferramentas & Outros</option>
+                    <option value="custom">✏️ Outra Categoria (Personalizada)...</option>
+                  </select>
+
+                  <input
+                    type="text"
+                    required
+                    value={editingSkill.category || ''}
+                    onChange={(e) => setEditingSkill({ ...editingSkill, category: e.target.value })}
+                    placeholder="Digite ou selecione uma categoria..."
+                    className="flex-1 bg-[#05030e] border border-[#9d4edd]/30 rounded p-2 text-white font-mono text-xs focus:outline-none focus:border-[#c77dff]"
+                  />
+                </div>
+
+                <div className="pt-1">
+                  <span className="text-[10px] text-slate-500 font-mono block mb-1">Categorias Sugeridas:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {[
+                      'Linguagens de Programação',
+                      'Frontend & Web UI',
+                      'Backend & APIs',
+                      'Cloud, DevOps & Infra',
+                      'Bancos de Dados & Storage',
+                      'IA & Data Science',
+                      'Ferramentas & Outros'
+                    ].map((catName) => (
+                      <button
+                        key={catName}
+                        type="button"
+                        onClick={() => setEditingSkill({ ...editingSkill, category: catName })}
+                        className={`px-2 py-0.5 rounded text-[10px] font-mono border transition-all cursor-pointer ${
+                          editingSkill.category === catName
+                            ? 'bg-[#9d4edd] text-white border-[#c77dff] font-bold shadow'
+                            : 'bg-[#0e0a22] text-slate-400 hover:text-slate-200 border-[#9d4edd]/20'
+                        }`}
+                      >
+                        {catName}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div>
