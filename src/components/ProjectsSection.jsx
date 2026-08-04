@@ -117,9 +117,9 @@ export default function ProjectsSection({ projectsList = [], filterQuery = '', o
                 {/* Footer Actions */}
                 <div className="pt-3 border-t border-[#9d4edd]/15 flex items-center justify-end">
                   <a
-                    href={project.repoUrl || 'https://github.com/A-jota07'}
+                    href={project.repoUrl || import.meta.env.VITE_GITHUB_URL || 'https://github.com/A-jota07'}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noreferrer"
                     className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-[#9d4edd]/20 transition-all flex items-center gap-1.5 text-xs font-mono"
                     title="Código Fonte no GitHub"
                   >

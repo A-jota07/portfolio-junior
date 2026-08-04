@@ -1,3 +1,7 @@
+export const GITHUB_URL = import.meta.env.VITE_GITHUB_URL || "https://github.com/A-jota07";
+export const LINKEDIN_URL = import.meta.env.VITE_LINKEDIN_URL || "https://www.linkedin.com/in/alexandre-c-souza-jr/";
+export const EMAIL_ADDRESS = import.meta.env.VITE_EMAIL_ADDRESS || "alexandrecassiodesouzajunior@gmail.com";
+
 export const PERSONAL_INFO = {
   name: "ALEXANDRE CÁSSIO DE SOUZA JUNIOR",
   title: "Engenheiro Full Stack Junior",
@@ -5,9 +9,9 @@ export const PERSONAL_INFO = {
   location: "Rondonópolis, MT (Disponível Remoto)",
   status: "Disponível para Projetos",
   contact: {
-    email: "alexandrecassiodesouzajunior@gmail.com",
-    github: "https://github.com/A-jota07",
-    linkedin: "https://www.linkedin.com/in/alexandre-c-souza-jr/",
+    email: EMAIL_ADDRESS,
+    github: GITHUB_URL,
+    linkedin: LINKEDIN_URL,
     twitter: "https://x.com/A_Junior15"
   },
   stats: {
@@ -19,9 +23,9 @@ export const PERSONAL_INFO = {
 export const CODE_SNIPPETS = {
   contactInfo: `const informacoesContato = {
   nome: "Alexandre Cássio de Souza Junior",
-  email: "alexandrecassiodesouzajunior@gmail.com",
-  github: "https://github.com/A-jota07",
-  linkedin: "https://www.linkedin.com/in/alexandre-c-souza-jr/",
+  email: "${EMAIL_ADDRESS}",
+  github: "${GITHUB_URL}",
+  linkedin: "${LINKEDIN_URL}",
   status: "Disponível para contratos e cargos em tempo integral"
 };`,
 

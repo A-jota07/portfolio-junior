@@ -11,8 +11,10 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
     { id: 'skills', label: '_habilidades', comment: '// stack tecnológica' }
   ];
 
+  const contactEmail = import.meta.env.VITE_EMAIL_ADDRESS || "alexandrecassiodesouzajunior@gmail.com";
+
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText("alexandrecassiodesouzajunior@gmail.com");
+    navigator.clipboard.writeText(contactEmail);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -53,7 +55,7 @@ export default function Navbar({ activeSection, setActiveSection, filterQuery, s
             title="Copiar e-mail para a área de transferência"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-            <span className="text-xs">alexandrecassiodesouzajunior@gmail.com</span>
+            <span className="text-xs">{contactEmail}</span>
           </button>
         </div>
       </div>

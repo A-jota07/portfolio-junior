@@ -156,9 +156,9 @@ export default function HeroSection({ onExploreClick, onContactClick }) {
         </button>
 
         <a
-          href={`https://${PERSONAL_INFO.contact.github}`}
+          href={import.meta.env.VITE_GITHUB_URL || (PERSONAL_INFO.contact.github.startsWith('http') ? PERSONAL_INFO.contact.github : `https://${PERSONAL_INFO.contact.github}`)}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noreferrer"
           className="p-2.5 rounded-md bg-[#0e0a22] border border-[#9d4edd]/30 text-slate-300 hover:text-[#c77dff] hover:border-[#c77dff] transition-all cursor-pointer"
           title="Perfil no GitHub"
         >
@@ -166,9 +166,9 @@ export default function HeroSection({ onExploreClick, onContactClick }) {
         </a>
 
         <a
-          href={`https://${PERSONAL_INFO.contact.linkedin}`}
+          href={import.meta.env.VITE_LINKEDIN_URL || (PERSONAL_INFO.contact.linkedin.startsWith('http') ? PERSONAL_INFO.contact.linkedin : `https://${PERSONAL_INFO.contact.linkedin}`)}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noreferrer"
           className="p-2.5 rounded-md bg-[#0e0a22] border border-[#9d4edd]/30 text-slate-300 hover:text-[#c77dff] hover:border-[#c77dff] transition-all cursor-pointer"
           title="Perfil no LinkedIn"
         >

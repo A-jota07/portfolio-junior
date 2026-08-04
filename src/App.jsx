@@ -60,7 +60,8 @@ function PublicPortfolio() {
   };
 
   const handleHireClick = () => {
-    showToast('🚀 Protocolo de contratação iniciado! E-mail: alexandrecassiodesouzajunior@gmail.com');
+    const contactEmail = import.meta.env.VITE_EMAIL_ADDRESS || profileInfo.email || 'alexandrecassiodesouzajunior@gmail.com';
+    showToast(`🚀 Protocolo de contratação iniciado! E-mail: ${contactEmail}`);
   };
 
   const scrollToSection = (id) => {
@@ -134,9 +135,9 @@ function PublicPortfolio() {
         <footer className="mt-16 pt-8 pb-12 border-t border-[#9d4edd]/20 text-center space-y-4 text-xs font-mono text-slate-400">
           <div className="flex items-center justify-center gap-4">
             <a
-              href={`https://${profileInfo.github || 'github.com/A-jota07'}`}
+              href={import.meta.env.VITE_GITHUB_URL || (profileInfo.github ? (profileInfo.github.startsWith('http') ? profileInfo.github : `https://${profileInfo.github}`) : 'https://github.com/A-jota07')}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noreferrer"
               className="flex items-center gap-1 hover:text-[#c77dff] transition-colors"
             >
               <GithubIcon className="w-3.5 h-3.5" />
@@ -144,9 +145,9 @@ function PublicPortfolio() {
             </a>
             <span className="text-slate-700">•</span>
             <a
-              href={`https://${profileInfo.linkedin || 'linkedin.com'}`}
+              href={import.meta.env.VITE_LINKEDIN_URL || (profileInfo.linkedin ? (profileInfo.linkedin.startsWith('http') ? profileInfo.linkedin : `https://${profileInfo.linkedin}`) : 'https://www.linkedin.com/in/alexandre-c-souza-jr/')}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noreferrer"
               className="flex items-center gap-1 hover:text-[#c77dff] transition-colors"
             >
               <LinkedinIcon className="w-3.5 h-3.5" />
@@ -154,7 +155,7 @@ function PublicPortfolio() {
             </a>
             <span className="text-slate-700">•</span>
             <a
-              href={`mailto:${profileInfo.email || 'alexandrecassiodesouzajunior@gmail.com'}`}
+              href={`mailto:${import.meta.env.VITE_EMAIL_ADDRESS || profileInfo.email || 'alexandrecassiodesouzajunior@gmail.com'}`}
               className="flex items-center gap-1 hover:text-[#c77dff] transition-colors"
             >
               <Mail className="w-3.5 h-3.5" />

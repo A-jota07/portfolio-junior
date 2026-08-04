@@ -128,9 +128,9 @@ export default function ProjectModal({ project, onClose }) {
         {/* Footer Actions */}
         <div className="px-6 py-4 bg-[#080514] border-t border-[#9d4edd]/20 flex items-center justify-end">
           <a
-            href={project.repoUrl || 'https://github.com'}
+            href={project.repoUrl || import.meta.env.VITE_GITHUB_URL || 'https://github.com/A-jota07'}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noreferrer"
             className="flex items-center gap-2 px-5 py-2 rounded text-xs font-mono font-bold bg-[#120d2d] border border-[#9d4edd]/30 text-slate-200 hover:text-[#c77dff] hover:border-[#c77dff] transition-all cursor-pointer"
           >
             <GithubIcon className="w-4 h-4" />
