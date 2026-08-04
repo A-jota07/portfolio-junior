@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Terminal, Home, LayoutDashboard, FileQuestion, Sparkles, ShieldAlert, Cpu, ArrowLeft } from 'lucide-react';
+import { Terminal, Home, FileQuestion, Sparkles, ShieldAlert, Cpu } from 'lucide-react';
 
 export default function NotFoundPage() {
   const [mounted, setMounted] = useState(false);
@@ -118,21 +118,13 @@ export default function NotFoundPage() {
           </div>
 
           {/* Interactive Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+          <div className="flex items-center justify-center pt-2">
             <Link
               to="/"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-mono text-xs sm:text-sm font-semibold bg-gradient-to-r from-[#9d4edd] via-[#7209b7] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-lg shadow-[#9d4edd]/30 hover:shadow-[#9d4edd]/50 transition-all transform active:scale-95 cursor-pointer"
+              className="px-6 py-3 rounded-lg font-mono text-xs sm:text-sm font-semibold bg-gradient-to-r from-[#9d4edd] via-[#7209b7] to-[#f72585] text-white hover:from-[#c77dff] hover:to-[#9d4edd] shadow-lg shadow-[#9d4edd]/30 hover:shadow-[#9d4edd]/50 transition-all transform active:scale-95 cursor-pointer flex items-center gap-2"
             >
               <Home className="w-4 h-4" />
               <span>[ Volta ao Início ]</span>
-            </Link>
-
-            <Link
-              to="/admin"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-mono text-xs sm:text-sm font-medium bg-[#0e0a22] border border-[#9d4edd]/40 text-[#c77dff] hover:bg-[#9d4edd]/20 hover:border-[#c77dff] transition-all cursor-pointer"
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>[ Dashboard / Admin ]</span>
             </Link>
           </div>
 
